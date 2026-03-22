@@ -1,7 +1,7 @@
 <?php
-// сайт vitrazeArt © 2026, версия 0.1 от 22 Марта 2026г
+-// web vitrazeArt.cz © 2026 version 0.1.1 by 22-mar-26
 
-// Функция для чтения блоков из файла (разделитель — пустая строка)
+// reading blocks of lines from a file (delimiter: empty line)
 function readBlocks($filePath) {
     if (!file_exists($filePath)) return [];
     $content = file_get_contents($filePath);
@@ -13,6 +13,7 @@ function readBlocks($filePath) {
     }
     return $items;
 }
+// date conversion YYYY-MM-DD -> d месяц ГОД
 function formatDateRu($dateStr) {
     $months = [
         '01' => 'января',
@@ -46,7 +47,7 @@ function formatDateRu($dateStr) {
     }
 }
 
-// Читаем все три файла
+// read all files
 $announces = readBlocks('data/announces.txt');
 $reports   = readBlocks('data/reports.txt');
 $authors   = readBlocks('data/authors.txt');
@@ -57,10 +58,8 @@ $authors   = readBlocks('data/authors.txt');
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Пражские витражи — анонсы, репортажи, авторы</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
-    rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
-    crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/bootstrap-icons.min.css">
   <style>
     .person-img { 
       width: 85px;
@@ -76,6 +75,13 @@ $authors   = readBlocks('data/authors.txt');
       height: 180px;
       object-fit: cover;
       border-radius: 14px;
+    }
+    footer a i {
+      transition: all 0.2s ease;
+    }
+    footer a:hover i {
+      color: #0d6efd; /* bootstrap primary */
+      transform: translateY(-2px);
     }
     @media (min-width: 768px) {
       .announce-img {
@@ -107,14 +113,14 @@ $authors   = readBlocks('data/authors.txt');
   <main class="container-fluid px-4 px-lg-5 my-4 my-lg-5">
     <div class="row g-4 g-lg-5">
 
-    <!-- Левая колонка – анонсы + репортажи -->
+    <!-- Left column – announcements + reports -->
     <div class="col-lg-8">
       <h2 class="h3 mb-4 pb-2 border-bottom">анонсы</h2>
 
-      <!-- Горизонтальные карточки анонсов -->
+      <!-- Announcements -->
       <div class="mb-5">
 
-<?php foreach ($announces as $item): 
+<?php foreach ($announces as $index => $item):
           $datetime = explode(" ", $item[0]) ?? '';
           $place    = $item[1] ?? '';
           $title    = $item[2] ?? 'Без названия';
@@ -122,6 +128,7 @@ $authors   = readBlocks('data/authors.txt');
           $image    = $item[4] ?? '';
           $href     = $item[5] ?? '';
         ?>
+        <?php if ($index === 0): ?>
         <div class="card mb-4 border-0 shadow-sm overflow-hidden">
           <div class="row g-0">
             <div class="col-md-4">
@@ -129,36 +136,31 @@ $authors   = readBlocks('data/authors.txt');
             </div>
             <div class="col-md-8">
               <div class="card-body">
-                <div class="text-muted small mb-2"><?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?> · <?= htmlspecialchars($place) ?></div>
+                <div class="text-muted small mb-2">
+                  <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?> · <?= htmlspecialchars($place) ?>
+                </div>
                 <h5 class="card-title fs-4 mb-3"><?= htmlspecialchars($title) ?></h5>
                 <p class="card-text text-muted mb-3"><?= htmlspecialchars($desc) ?></p>
-                <a href="<?= $href ?>" class="btn btn-sm btn-outline-primary">подробнее →</a>
+                <a href="<?= $href ?>" class="btn btn-sm btn-outline-primary">подробнее <i class="bi bi-arrow-right"></i></a>
               </div>
             </div>
           </div>
         </div>
-        <?php endforeach; ?>
-
-      <!-- Пример анонса 1
-        <div class="card mb-4 border-0 shadow-sm overflow-hidden">
-          <div class="row g-0">
-            <div class="col-md-4">
-              <img src="file:///C:\Users\lamp\vitrazeArt\html\images\announces\2026-03-24-drc.jpg?w=800" class="img-fluid announce-img" alt="">
-            </div>
-            <div class="col-md-8">
-              <div class="card-body">
-                <div class="text-muted small mb-2">28 марта 2026 · 19:00 · Арт-кафе «Слово»</div>
-                <h5 class="card-title fs-4 mb-3">Вечер новой поэзии «Голоса марта»</h5>
-                <p class="card-text text-muted mb-3">Открытый микрофон, специальные гости, атмосфера живого слова. Вход свободный, приходите с собственными текстами.</p>
-                <a href="#" class="btn btn-sm btn-outline-primary">Подробнее →</a>
-              </div>
-            </div>
+        <?php else: ?>
+        <div class="border-bottom py-3">
+          <div class="text-muted small mb-1">
+             <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($place) ?>
           </div>
-        </div>-->
+          <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
+          <p class="text-muted mb-2"><?= htmlspecialchars($desc) ?>… <a href="<?= $href ?>">подробнее <i class="bi bi-arrow-right"></i></a></p>
+          
+        </div>
+        <?php endif; ?>
+        <?php endforeach; ?>
 
       </div>
 
-      <!-- Репортажи ниже (список) -->
+      <!-- Reports -->
       <h2 class="h3 mb-4 pb-2 border-bottom">прошедшее</h2>
 
       <div class="list-group list-group-flush border rounded shadow-sm">
@@ -178,21 +180,12 @@ $authors   = readBlocks('data/authors.txt');
         <?php endforeach; ?>
       </div>
 
-      <!--<div class="list-group list-group-flush border rounded shadow-sm">
-        <a href="#" class="list-group-item list-group-item-action px-4 py-3">
-          <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1 fw-bold">«Зима в словах»: поэтический марафон 2026</h5>
-            <small class="text-muted">15 марта</small>
-          </div>
-          <p class="mb-1 text-muted">120 участников, 80+ текстов, яркие моменты и фоторепортаж.</p>
-        </a>-->
-
       <div class="text-center mt-5">
-        <a href="#" class="btn btn-outline-primary">всё прошедшее →</a>
+        <a href="#" class="btn btn-outline-primary">всё прошедшее <i class="bi bi-arrow-right"></i></a>
       </div>
     </div>
 
-    <!-- Правая колонка – авторы -->
+    <!-- Right column – Authors -->
     <div class="col-lg-4">
       <div class="sidebar-sticky">
         <h2 class="h3 mb-4 pb-2 border-bottom">авторы</h2>
@@ -212,16 +205,9 @@ $authors   = readBlocks('data/authors.txt');
             </div>
           </a>
           <?php endforeach; ?>
-          <!--<a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
-            <img src="file:///C:\Users\lamp\vitrazeArt\html\images\authors\inna-p.jpg?w=200" class="person-img" alt="">
-            <div>
-              <h6 class="mb-0 fw-bold">Анна К.</h6>
-              <small class="text-muted">Поэтесса, переводчица</small>
-            </div>
-          </a>-->
         </div>
         <div class="text-center mt-5">
-          <a href="#" class="btn btn-outline-primary">полная галерея авторов →</a>
+          <a href="#" class="btn btn-outline-primary">все наши авторы <i class="bi bi-arrow-right"></i></a>
         </div>
       </div>
     </div>
@@ -230,13 +216,26 @@ $authors   = readBlocks('data/authors.txt');
 
   <footer class="bg-white border-top py-4 mt-5 text-center text-muted small">
     <div class="container">
-      © 2026 <a href="https://t.me/vitraze">Пражские витражи</a> · все цвета творчества
+      <div class="mb-3">
+        © 2026 
+        <a href="https://t.me/vitraze" target="blank" class="text-decoration-none">
+          Пражские витражи
+        </a> · все цвета творчества
+      </div>
+      <div class="d-flex justify-content-center gap-3 fs-3">
+        <a href="https://www.facebook.com/groups/vitraze" target="_blank" class="text-muted" title="Пражские витражи в facebook">
+          <i class="bi bi-facebook"></i>
+        </a>
+        <a href="https://t.me/vitraze" target="_blank" class="text-muted" title="Пражские витражи в телеграм">
+          <i class="bi bi-telegram"></i>
+        </a>
+        <a href="https://threads.net/@javageek.cz" target="_blank" class="text-muted" title="Пражские витражи в threads">
+          <i class="bi bi-threads"></i>
+        </a>
+      </div>
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
-    crossorigin="anonymous">
-  </script>
+  <script src="/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
