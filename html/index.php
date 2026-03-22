@@ -1,5 +1,5 @@
 <?php
--// web vitrazeArt.cz © 2026 version 0.1.1 by 22-mar-26
+// Web vitrazeArt.cz © 2026 version 0.1.1 by 22-mar-26
 
 // reading blocks of lines from a file (delimiter: empty line)
 function readBlocks($filePath) {
