@@ -1,5 +1,5 @@
 <?php
-// Web vitrazeArt.cz © 2026 version 0.1.1 by 22-mar-26
+// Web vitrazeArt.cz © 2026 version 0.1.2 by 22-Mar-26
 
 // reading blocks of lines from a file (delimiter: empty line)
 function readBlocks($filePath) {
@@ -12,6 +12,22 @@ function readBlocks($filePath) {
         $items[] = $lines;
     }
     return $items;
+}
+// filter list of announcements to exclude past events
+function filterByDate(array $data): array {
+    $today = date('Y-m-d');
+    $result = [];
+    foreach ($data as $item) {
+        if (!isset($item[0])) {
+            continue; // skip invalid elements
+        }
+        $date = $item[0];
+        // keep only date >= today
+        if ($date >= $today) {
+            $result[] = $item;
+        }
+    }
+    return $result;
 }
 // date conversion YYYY-MM-DD -> d месяц ГОД
 function formatDateRu($dateStr) {
@@ -46,9 +62,21 @@ function formatDateRu($dateStr) {
         return "$day $month $year";
     }
 }
+// parse markdown links in text
+function parseMarkdownLinks($text) {
+    return preg_replace_callback(
+        '/\[(.*?)\]\((.*?)\)/',
+        function ($matches) {
+            $label = htmlspecialchars($matches[1], ENT_QUOTES, 'UTF-8');
+            $url   = htmlspecialchars($matches[2], ENT_QUOTES, 'UTF-8');
+            return '<a href="' . $url . '" target="_blank" class="text-decoration-none">' . $label . '</a>';
+        },
+        $text
+    );
+}
 
 // read all files
-$announces = readBlocks('data/announces.txt');
+$announces = filterByDate(readBlocks('data/announces.txt'));
 $reports   = readBlocks('data/reports.txt');
 $authors   = readBlocks('data/authors.txt');
 ?>
@@ -58,8 +86,9 @@ $authors   = readBlocks('data/authors.txt');
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Пражские витражи — анонсы, репортажи, авторы</title>
-  <link href="/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/bootstrap-icons.min.css">
+  <link href="/css/bootstrap.min.css" rel="stylesheet"><!-- v5.3.8 -->
+  <link rel="stylesheet" href="/css/bootstrap-icons.min.css"><!-- v1.13.1 -->
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
   <style>
     .person-img { 
       width: 85px;
@@ -132,12 +161,14 @@ $authors   = readBlocks('data/authors.txt');
         <div class="card mb-4 border-0 shadow-sm overflow-hidden">
           <div class="row g-0">
             <div class="col-md-4">
-              <img src="<?= htmlspecialchars($image) ?>" class="img-fluid announce-img" alt="<?= htmlspecialchars($title) ?>">
+              <a href="<?= $href ?>">
+                <img src="<?= htmlspecialchars($image) ?>" class="img-fluid announce-img" alt="<?= htmlspecialchars($title) ?>">
+              </a>
             </div>
             <div class="col-md-8">
               <div class="card-body">
                 <div class="text-muted small mb-2">
-                  <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?> · <?= htmlspecialchars($place) ?>
+                  <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?> · <?= parseMarkdownLinks($place) ?>
                 </div>
                 <h5 class="card-title fs-4 mb-3"><?= htmlspecialchars($title) ?></h5>
                 <p class="card-text text-muted mb-3"><?= htmlspecialchars($desc) ?></p>
@@ -149,7 +180,7 @@ $authors   = readBlocks('data/authors.txt');
         <?php else: ?>
         <div class="border-bottom py-3">
           <div class="text-muted small mb-1">
-             <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($place) ?>
+             <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?> · <?= parseMarkdownLinks($place) ?>
           </div>
           <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
           <p class="text-muted mb-2"><?= htmlspecialchars($desc) ?>… <a href="<?= $href ?>">подробнее <i class="bi bi-arrow-right"></i></a></p>
