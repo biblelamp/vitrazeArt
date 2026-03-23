@@ -1,79 +1,8 @@
 <?php
-// Web vitrazeArt.cz © 2026 version 0.1.2 by 22-Mar-26
+// Web vitrazeArt.cz © 2026 version 0.1.3 by 23-Mar-26
 
-// reading blocks of lines from a file (delimiter: empty line)
-function readBlocks($filePath) {
-    if (!file_exists($filePath)) return [];
-    $content = file_get_contents($filePath);
-    $blocks = preg_split('/\n\s*\n/', trim($content), -1, PREG_SPLIT_NO_EMPTY);
-    $items = [];
-    foreach ($blocks as $block) {
-        $lines = array_filter(array_map('trim', explode("\n", $block)));
-        $items[] = $lines;
-    }
-    return $items;
-}
-// filter list of announcements to exclude past events
-function filterByDate(array $data): array {
-    $today = date('Y-m-d');
-    $result = [];
-    foreach ($data as $item) {
-        if (!isset($item[0])) {
-            continue; // skip invalid elements
-        }
-        $date = $item[0];
-        // keep only date >= today
-        if ($date >= $today) {
-            $result[] = $item;
-        }
-    }
-    return $result;
-}
-// date conversion YYYY-MM-DD -> d месяц ГОД
-function formatDateRu($dateStr) {
-    $months = [
-        '01' => 'января',
-        '02' => 'февраля',
-        '03' => 'марта',
-        '04' => 'апреля',
-        '05' => 'мая',
-        '06' => 'июня',
-        '07' => 'июля',
-        '08' => 'августа',
-        '09' => 'сентября',
-        '10' => 'октября',
-        '11' => 'ноября',
-        '12' => 'декабря'
-    ];
-
-    $date = DateTime::createFromFormat('Y-m-d', $dateStr);
-    if (!$date) {
-        return null; // or throws
-    }
-
-    $day = $date->format('j');
-    $month = $months[$date->format('m')];
-    $year = $date->format('Y');
-    $currentYear = date('Y');
-
-    if ($year == $currentYear) {
-        return "$day $month";
-    } else {
-        return "$day $month $year";
-    }
-}
-// parse markdown links in text
-function parseMarkdownLinks($text) {
-    return preg_replace_callback(
-        '/\[(.*?)\]\((.*?)\)/',
-        function ($matches) {
-            $label = htmlspecialchars($matches[1], ENT_QUOTES, 'UTF-8');
-            $url   = htmlspecialchars($matches[2], ENT_QUOTES, 'UTF-8');
-            return '<a href="' . $url . '" target="_blank" class="text-decoration-none">' . $label . '</a>';
-        },
-        $text
-    );
-}
+define('BASE_PATH', __DIR__ . '/');
+require_once BASE_PATH . 'functions.php';
 
 // read all files
 $announces = filterByDate(readBlocks('data/announces.txt'));
@@ -87,57 +16,13 @@ $authors   = readBlocks('data/authors.txt');
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Пражские витражи — анонсы, репортажи, авторы</title>
   <link href="/css/bootstrap.min.css" rel="stylesheet"><!-- v5.3.8 -->
+  <link href="/css/style.css" rel="stylesheet"><!-- my styles -->
   <link rel="stylesheet" href="/css/bootstrap-icons.min.css"><!-- v1.13.1 -->
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
-  <style>
-    .person-img { 
-      width: 85px;
-      height: 85px;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-    .sidebar-sticky {
-      position: sticky;
-      top: 76px;
-    }
-    .announce-img {
-      height: 180px;
-      object-fit: cover;
-      border-radius: 14px;
-    }
-    footer a i {
-      transition: all 0.2s ease;
-    }
-    footer a:hover i {
-      color: #0d6efd; /* bootstrap primary */
-      transform: translateY(-2px);
-    }
-    @media (min-width: 768px) {
-      .announce-img {
-        height: 100%;
-      }
-    }
-  </style>
 </head>
 <body class="bg-light">
 
-  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
-    <div class="container-fluid px-4 px-lg-5">
-      <a class="navbar-brand fs-3 text-dark" href="/">
-        <img src="images/logo.jpg" alt="Пражские витражи" style="height:45px">
-        пражские витражи
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarContent">
-        <form class="d-flex ms-auto my-2 my-lg-0" style="max-width: 420px; width: 100%;">
-          <input class="form-control me-2 rounded-pill" type="search" placeholder="поиск по анонсам, событиям и авторам..." aria-label="Поиск">
-          <button class="btn btn-outline-secondary rounded-pill" type="submit"><i class="bi bi-search"></i></button>
-        </form>
-      </div>
-    </div>
-  </nav>
+  <?php include 'header.html'; ?>
 
   <main class="container-fluid px-4 px-lg-5 my-4 my-lg-5">
     <div class="row g-4 g-lg-5">
@@ -245,27 +130,7 @@ $authors   = readBlocks('data/authors.txt');
     </div>
   </main>
 
-  <footer class="bg-white border-top py-4 mt-5 text-center text-muted small">
-    <div class="container">
-      <div class="mb-3">
-        © 2026 
-        <a href="https://t.me/vitraze" target="blank" class="text-decoration-none">
-          Пражские витражи
-        </a> · все цвета творчества
-      </div>
-      <div class="d-flex justify-content-center gap-3 fs-3">
-        <a href="https://www.facebook.com/groups/vitraze" target="_blank" class="text-muted" title="Пражские витражи в facebook">
-          <i class="bi bi-facebook"></i>
-        </a>
-        <a href="https://t.me/vitraze" target="_blank" class="text-muted" title="Пражские витражи в телеграм">
-          <i class="bi bi-telegram"></i>
-        </a>
-        <a href="https://threads.net/@javageek.cz" target="_blank" class="text-muted" title="Пражские витражи в threads">
-          <i class="bi bi-threads"></i>
-        </a>
-      </div>
-    </div>
-  </footer>
+  <?php include 'footer.html'; ?>
 
   <script src="/js/bootstrap.bundle.min.js"></script>
 </body>
