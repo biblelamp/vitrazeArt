@@ -12,45 +12,36 @@ $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 $parts = explode('/', $uri);
 
 $selected_nick = null;
-$author_detail = null;
+$author_item = null;
 
 if (count($parts) === 2 && $parts[0] === 'authors' && !empty($parts[1])) {
     $selected_nick = strtolower(trim($parts[1]));
 } elseif (count($parts) === 1 && str_starts_with($parts[0], '@')) {
     $selected_nick = strtolower(substr($parts[0], 1));
-    header("Location: /authors/$selected_nick", true, 301);
-    exit;
 }
 // find selected author
 if ($selected_nick) {
-    foreach ($authors as $item) {
+    foreach ($authors as $key => $item) {
         $nick = isset($item[1]) ? strtolower(trim($item[1])) : '';
         if ($nick === $selected_nick) {
-            $author_detail = $item;
+            $author_item = $item;
+            unset($authors[$key]); // remove found item
             break;
         }
     }
 }
 // read /data/authors/<selected_nick>.txt
-$detail_blocks = [];
-if ($author_detail && !empty($selected_nick)) {
+$author_detail = [];
+if ($selected_nick) {
     $detail_path = "data/authors/{$selected_nick}.txt";
     if (file_exists($detail_path)) {
-        $detail_blocks = readBlocks($detail_path);
+        $author_detail = readBlocks($detail_path);
     }
 }
-
-$other_authors = [];
-$shown_nicks = $selected_nick ? [$selected_nick] : [];
-foreach ($authors as $item) {
-    $nick = isset($item[1]) ? strtolower(trim($item[1])) : '';
-    if ($nick && !in_array($nick, $shown_nicks)) { // && count($other_authors) < 4) {
-        $other_authors[] = $item;
-        $shown_nicks[] = $nick;
-    }
-}
+// shuffle the list of authors
+shuffle($authors);
 if ($selected_nick) {
-    $other_authors = array_slice($authors, 0, 4);
+    $authors = array_slice($authors, 0, 4);
 }
 ?>
 <!DOCTYPE html>
@@ -59,7 +50,7 @@ if ($selected_nick) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>
-    <?= $author_detail ? htmlspecialchars($author_detail[0] ?? 'Автор') . ' — ' : '' ?>
+    <?= $author_item ? htmlspecialchars($author_item[0] ?? 'Автор') . ' — ' : '' ?>
     Авторы — Пражские витражи
   </title>
   <link href="/css/bootstrap.min.css" rel="stylesheet"><!-- v5.3.8 -->
@@ -73,8 +64,10 @@ if ($selected_nick) {
       object-fit: cover; 
       border-radius: 50%;
     }
-    .sidebar-sticky { position: sticky; top: 76px; }
-    .author-card:hover { transform: translateY(-3px); transition: all 0.2s; }
+    .author-card:hover { 
+      transform: translateY(-3px); 
+      transition: all 0.2s; 
+    }
   </style>
 </head>
 <body class="bg-light">
@@ -87,34 +80,34 @@ if ($selected_nick) {
     <!-- Left columns — author(s) -->
     <div class="col-lg-8">
 
-      <?php if ($author_detail): ?>
+      <?php if ($author_item): ?>
         <!-- Подробная информация о выбранном авторе -->
         <div class="card border-0 shadow-sm mb-5">
           <div class="card-body p-4 p-lg-5">
             <div class="row align-items-center g-4 g-lg-5">
               <div class="col-md-4 text-center text-md-start">
-                <img src="<?= htmlspecialchars('/images/authors/' . $author_detail[1] . '.jpg' ?? '/images/authors/default-m.jpg') ?>"
-                     class="person-img-lg mb-3" alt="<?= htmlspecialchars($author_detail[0] ?? '') ?>">
+                <img src="<?= htmlspecialchars('/images/authors/' . $author_item[1] . '.jpg' ?? '/images/authors/default-m.jpg') ?>"
+                     class="person-img-lg mb-3" alt="<?= htmlspecialchars($author_item[0] ?? '') ?>">
               </div>
               <div class="col-md-8">
-                <h1 class="h3 fw-bold mb-2"><?= htmlspecialchars($author_detail[0] ?? '—') ?></h1>
-                <p class="lead text-muted mb-3"><?= htmlspecialchars($author_detail[2] ?? '') ?></p>
-                <?php if (!empty($author_detail[1])): ?>
-                  <p class="text-muted mb-4">@<?= htmlspecialchars($author_detail[1]) ?></p>
+                <h1 class="h3 fw-bold mb-2"><?= htmlspecialchars($author_item[0] ?? '—') ?></h1>
+                <p class="lead text-muted mb-3"><?= htmlspecialchars($author_item[2] ?? '') ?></p>
+                <?php if (!empty($author_item[1])): ?>
+                  <p class="text-muted mb-4">@<?= htmlspecialchars($author_item[1]) ?></p>
                 <?php endif; ?>
-                <?php if (!empty($author_detail[4])): ?>
-                  <a href="<?= htmlspecialchars($author_detail[4]) ?>" target="_blank" class="btn btn-sm btn-outline-primary">
+                <?php if (!empty($author_item[4])): ?>
+                  <a href="<?= htmlspecialchars($author_item[4]) ?>" target="_blank" class="btn btn-sm btn-outline-primary">
                     профиль <i class="bi bi-box-arrow-up-right"></i>
                   </a>
                 <?php endif; ?>
               </div>
             </div>
 
-            <?php if (!empty($detail_blocks)): ?>
+            <?php if (!empty($author_detail)): ?>
               <hr class="my-4">
               <div class="mt-4">
-                <?php foreach ($detail_blocks as $block): ?>
-                  <p class="mb-3"><?= nl2br(htmlspecialchars(implode("\n", $block))) ?></p>
+                <?php foreach ($author_detail as $block): ?>
+                  <p class="mb-3"><?= nl2br(parseMarkdown(implode("\n", $block))) ?></p>
                 <?php endforeach; ?>
               </div>
             <?php endif; ?>
@@ -124,11 +117,11 @@ if ($selected_nick) {
 
       <!-- Карточки авторов (все или остальные) -->
       <h2 class="h3 mb-4 pb-2 border-bottom">
-        <?= $author_detail ? 'Другие авторы' : 'Наши авторы' ?>
+        <?= $author_item ? 'другие авторы' : 'авторы' ?>
       </h2>
 
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2">
-        <?php foreach ($other_authors as $item):
+        <?php foreach ($authors as $item):
           $name     = $item[0] ?? '—';
           $nickname = $item[1] ?? '';
           $role     = $item[2] ?? '';
@@ -149,19 +142,17 @@ if ($selected_nick) {
         <?php endforeach; ?>
       </div>
 
-      <?php if (count($authors) > count($other_authors) + ($author_detail ? 1 : 0)): ?>
+      <?php if ($selected_nick): ?>
         <div class="text-center mt-5">
           <a href="/authors/" class="btn btn-outline-primary">все авторы <i class="bi bi-arrow-right"></i></a>
         </div>
       <?php endif; ?>
-
     </div>
 
     <!-- right column — Announces -->
     <div class="col-lg-4">
       <div class="sidebar-sticky">
         <h2 class="h3 mb-4 pb-2 border-bottom">анонсы</h2>
-
         <div class="list-group list-group-flush border rounded shadow-sm">
           <?php foreach ($announces as $item):
             $datetime = explode(" ", $item[0] ?? '') ?? [];

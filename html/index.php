@@ -1,5 +1,5 @@
 <?php
-// Web vitrazeArt.cz © 2026 version 0.2.0 by 24-Mar-26
+// Web vitrazeArt.cz © 2026 version 0.2.1 by 24-Mar-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -113,7 +113,7 @@ $number_authors = 6;
             $nickname = $item[1] ?? '';
             $role     = $item[2] ?? '';
             $image    = '/images/authors/' . $nickname . '.jpg';
-            $href     = '/authors/@' . $nickname;
+            $href     = '/authors/' . $nickname;
           ?>
           <a href="<?= $href ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
             <img src="<?= $image ?>" class="person-img" alt="<?= htmlspecialchars($name) ?>">

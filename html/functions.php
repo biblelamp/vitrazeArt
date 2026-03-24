@@ -72,6 +72,29 @@ function parseMarkdownLinks($text) {
         $text
     );
 }
+// parse Markdown
+function parseMarkdown($text) {
+    // to avoid XSS
+    $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+
+    // horizontal separator (---)
+    $text = preg_replace('/\n*\s*---\s*\n*/', '<hr>', $text);
+
+    // links [name](url)
+    $text = preg_replace_callback('/\[(.*?)\]\((.*?)\)/', function ($matches) {
+        $name = $matches[1];
+        $url = $matches[2];
+        return '<a href="' . $url . '" target="_blank">' . $name . '</a>';
+    }, $text);
+
+    // italic **text**
+    $text = preg_replace('/\*\*(.*?)\*\*/s', '<strong>$1</strong>', $text);
+
+    // bold *text*
+    $text = preg_replace('/\*(.*?)\*/s', '<em>$1</em>', $text);
+
+    return $text;
+}
 // convert Name Lastname -> Name L.
 function shortName(string $fullName): string {
     $fullName = trim($fullName);
@@ -80,19 +103,19 @@ function shortName(string $fullName): string {
         return '';
     }
 
-    // Разбиваем по пробелам (учитываем множественные пробелы)
+    // divide by space(s)
     $parts = preg_split('/\s+/', $fullName);
 
     $firstName = $parts[0];
 
-    // Если только одно слово — возвращаем как есть
+    // if only one name
     if (count($parts) < 2) {
         return $firstName;
     }
 
     $lastName = $parts[1];
 
-    // Берём первую букву фамилии (с поддержкой UTF-8)
+    // get first letter of lastname
     $initial = mb_substr($lastName, 0, 1);
 
     return $firstName . ' ' . $initial . '.';
