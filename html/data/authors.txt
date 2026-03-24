@@ -1,29 +1,55 @@
-Людмила С.
-@ludmila
-поэтесса, преподаватель
-images/authors/ludmila-s.jpg
-https://t.me/vitraze/104
+Людмила Свирская
+svirskaja
+поэтесса и преподаватель
 
 Ланселот
-@lancelot
+lancelot
 поэт-романтик
-images/authors/lancelot.jpg
-https://t.me/lancepoetry
 
-Сергей Л.
-@levitski
+Сергей Левицкий
+levitski
 писатель-юморист
-images/authors/sergey-l.jpg
-https://t.me/vitraze/120
 
-Инна П.
-@papsheva
+Инна Папшева
+papsheva
 художник
-images/authors/inna-p.jpg
-https://t.me/vitraze/127
 
-Сергей С.
-@javageek
-сонграйтер, писатель
-images/authors/javageek.jpg
-https://t.me/vitraze/86
+Сергей Ирюпин
+javageek
+программист и сонграйтер
+
+Виктор Есипов
+default-m
+писатель, поэт и литературовед
+
+Наталья Волкова
+default-f
+поэтесса и преподаватель
+
+Лейла Бегим
+default-f
+поэтесса и писатель
+
+Максуд Кязимов
+default-m
+поэт
+
+Ольга Котенко
+default-f
+поэтесса
+
+Леонид Поторак
+default-m
+преподаватель, поэт и писатель
+
+Наталья Мухина
+default-f
+поэтесса и писатель
+
+Дарья Филиппская
+default-f
+поэтесса и актриса
+
+Ольга Бекреева
+default-f
+музыкант и сонграйтер

@@ -72,4 +72,29 @@ function parseMarkdownLinks($text) {
         $text
     );
 }
+// convert Name Lastname -> Name L.
+function shortName(string $fullName): string {
+    $fullName = trim($fullName);
+
+    if ($fullName === '') {
+        return '';
+    }
+
+    // Разбиваем по пробелам (учитываем множественные пробелы)
+    $parts = preg_split('/\s+/', $fullName);
+
+    $firstName = $parts[0];
+
+    // Если только одно слово — возвращаем как есть
+    if (count($parts) < 2) {
+        return $firstName;
+    }
+
+    $lastName = $parts[1];
+
+    // Берём первую букву фамилии (с поддержкой UTF-8)
+    $initial = mb_substr($lastName, 0, 1);
+
+    return $firstName . ' ' . $initial . '.';
+}
 ?>

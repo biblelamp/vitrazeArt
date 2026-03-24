@@ -1,13 +1,16 @@
 <?php
-// Web vitrazeArt.cz © 2026 version 0.1.3 by 23-Mar-26
+// Web vitrazeArt.cz © 2026 version 0.2.0 by 24-Mar-26
 
-define('BASE_PATH', __DIR__ . '/');
-require_once BASE_PATH . 'functions.php';
+require_once __DIR__ . '/functions.php';
 
 // read all files
 $announces = filterByDate(readBlocks('data/announces.txt'));
 $reports   = readBlocks('data/reports.txt');
 $authors   = readBlocks('data/authors.txt');
+// shuffle the elements of the array
+shuffle($authors);
+// number of authors on the page
+$number_authors = 6;
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -69,7 +72,6 @@ $authors   = readBlocks('data/authors.txt');
           </div>
           <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
           <p class="text-muted mb-2"><?= htmlspecialchars($desc) ?>… <a href="<?= $href ?>">подробнее <i class="bi bi-arrow-right"></i></a></p>
-          
         </div>
         <?php endif; ?>
         <?php endforeach; ?>
@@ -101,29 +103,29 @@ $authors   = readBlocks('data/authors.txt');
       </div>
     </div>
 
-    <!-- Right column – Authors -->
+    <!-- right column – Authors -->
     <div class="col-lg-4">
       <div class="sidebar-sticky">
         <h2 class="h3 mb-4 pb-2 border-bottom">авторы</h2>
         <div class="list-group list-group-flush">
-<?php foreach ($authors as $item): 
+<?php foreach (array_slice($authors, 0, $number_authors) as $item):
             $name     = $item[0] ?? '';
             $nickname = $item[1] ?? '';
             $role     = $item[2] ?? '';
-            $image    = $item[3] ?? '';
-            $link     = $item[4] ?? '#';
+            $image    = '/images/authors/' . $nickname . '.jpg';
+            $href     = '/authors/@' . $nickname;
           ?>
-          <a href="<?= htmlspecialchars($link) ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
-            <img src="<?= htmlspecialchars($image) ?>" class="person-img" alt="<?= htmlspecialchars($name) ?>">
+          <a href="<?= $href ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
+            <img src="<?= $image ?>" class="person-img" alt="<?= htmlspecialchars($name) ?>">
             <div>
-              <h6 class="mb-0 fw-bold"><?= htmlspecialchars($name) ?></h6>
+              <h5 class="mb-1"><?= shortName($name) ?></h5>
               <small class="text-muted"><?= htmlspecialchars($role) ?></small>
             </div>
           </a>
           <?php endforeach; ?>
         </div>
         <div class="text-center mt-5">
-          <a href="#" class="btn btn-outline-primary">все наши авторы <i class="bi bi-arrow-right"></i></a>
+          <a href="/authors/" class="btn btn-outline-primary">все авторы <i class="bi bi-arrow-right"></i></a>
         </div>
       </div>
     </div>
