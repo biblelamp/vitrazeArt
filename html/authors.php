@@ -1,5 +1,5 @@
 <?php
-// authors.php version 0.2 by 24-Mar-26
+// authors.php version 0.3 by 25-Mar-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -22,8 +22,8 @@ if (count($parts) === 2 && $parts[0] === 'authors' && !empty($parts[1])) {
 // find selected author
 if ($selected_nick) {
     foreach ($authors as $key => $item) {
-        $nick = isset($item[1]) ? strtolower(trim($item[1])) : '';
-        if ($nick === $selected_nick) {
+        $nick = explode(" ", $item[1] ?? '') ?? [];
+        if ($nick[0] === $selected_nick) {
             $author_item = $item;
             unset($authors[$key]); // remove found item
             break;
@@ -80,40 +80,37 @@ if ($selected_nick) {
     <!-- Left columns — author(s) -->
     <div class="col-lg-8">
 
-      <?php if ($author_item): ?>
-        <!-- Подробная информация о выбранном авторе -->
-        <div class="card border-0 shadow-sm mb-5">
-          <div class="card-body p-4 p-lg-5">
-            <div class="row align-items-center g-4 g-lg-5">
-              <div class="col-md-4 text-center text-md-start">
-                <img src="<?= htmlspecialchars('/images/authors/' . $author_item[1] . '.jpg' ?? '/images/authors/default-m.jpg') ?>"
-                     class="person-img-lg mb-3" alt="<?= htmlspecialchars($author_item[0] ?? '') ?>">
-              </div>
-              <div class="col-md-8">
-                <h1 class="h3 fw-bold mb-2"><?= htmlspecialchars($author_item[0] ?? '—') ?></h1>
-                <p class="lead text-muted mb-3"><?= htmlspecialchars($author_item[2] ?? '') ?></p>
-                <?php if (!empty($author_item[1])): ?>
-                  <p class="text-muted mb-4">@<?= htmlspecialchars($author_item[1]) ?></p>
-                <?php endif; ?>
-                <?php if (!empty($author_item[4])): ?>
-                  <a href="<?= htmlspecialchars($author_item[4]) ?>" target="_blank" class="btn btn-sm btn-outline-primary">
-                    профиль <i class="bi bi-box-arrow-up-right"></i>
-                  </a>
-                <?php endif; ?>
-              </div>
+<?php if ($author_item):
+            $name     = $author_item[0] ?? '';
+            $nickname = explode(" ", $author_item[1] ?? '') ?? [];
+            $role     = $author_item[2] ?? '';
+            $image    = '/images/authors/' . (count($nickname) > 1 ? $nickname[1] : $nickname[0]) . '.jpg';
+            $href     = '/authors/' . $nickname[0];
+      ?>
+      <!-- detail of selected author -->
+      <div class="card border-0 shadow-sm mb-5">
+        <div class="card-body p-4 p-lg-5">
+          <div class="row align-items-center g-4 g-lg-5">
+            <div class="col-md-4 text-center text-md-start">
+              <img src="<?= htmlspecialchars($image) ?>" class="person-img-lg mb-3" alt="<?= htmlspecialchars($name) ?>">
             </div>
-
-            <?php if (!empty($author_detail)): ?>
-              <hr class="my-4">
-              <div class="mt-4">
-                <?php foreach ($author_detail as $block): ?>
-                  <p class="mb-3"><?= nl2br(parseMarkdown(implode("\n", $block))) ?></p>
-                <?php endforeach; ?>
-              </div>
-            <?php endif; ?>
+            <div class="col-md-8">
+              <h1 class="h3 fw-bold mb-2"><?= htmlspecialchars($name) ?></h1>
+              <p class="lead text-muted mb-3"><?= htmlspecialchars($role) ?></p>
+              <p class="text-muted mb-4">@<?= htmlspecialchars($nickname[0]) ?></p>
+            </div>
           </div>
+<?php if (!empty($author_detail)): ?>
+            <hr class="my-4">
+            <div class="mt-4">
+<?php foreach ($author_detail as $block): ?>
+                <p class="mb-3"><?= nl2br(parseMarkdown(implode("\n", $block))) ?></p>
+<?php endforeach; ?>
+            </div>
+<?php endif; ?>
         </div>
-      <?php endif; ?>
+      </div>
+<?php endif; ?>
 
       <!-- Карточки авторов (все или остальные) -->
       <h2 class="h3 mb-4 pb-2 border-bottom">
@@ -121,32 +118,32 @@ if ($selected_nick) {
       </h2>
 
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2">
-        <?php foreach ($authors as $item):
-          $name     = $item[0] ?? '—';
-          $nickname = $item[1] ?? '';
-          $role     = $item[2] ?? '';
-          $image    = '/images/authors/' . $nickname . '.jpg';
-          $link     = '/authors/@' . $nickname;
+<?php foreach ($authors as $item):
+            $name     = $item[0] ?? '';
+            $nickname = explode(" ", $item[1] ?? '') ?? [];
+            $role     = $item[2] ?? '';
+            $image    = '/images/authors/' . (count($nickname) > 1 ? $nickname[1] : $nickname[0]) . '.jpg';
+            $href     = '/authors/' . $nickname[0];
         ?>
-          <div class="col">
-            <a href="/authors/<?= urlencode($nickname) ?>" class="text-decoration-none">
-              <div class="card h-100 border-0 shadow-sm author-card">
-                <div class="card-body text-center p-4">
-                  <img src="<?= htmlspecialchars($image) ?>" class="person-img mb-3" alt="<?= htmlspecialchars($name) ?>">
-                  <h5 class="card-title mb-1"><?= htmlspecialchars($name) ?></h5>
-                  <p class="card-text text-muted small"><?= htmlspecialchars($role) ?></p>
-                </div>
+        <div class="col">
+          <a href="<?= $href ?>" class="text-decoration-none">
+            <div class="card h-100 border-0 shadow-sm author-card">
+              <div class="card-body text-center p-4">
+                <img src="<?= htmlspecialchars($image) ?>" class="person-img mb-3" alt="<?= htmlspecialchars($name) ?>">
+                <h5 class="card-title mb-1"><?= htmlspecialchars($name) ?></h5>
+                <p class="card-text text-muted small"><?= htmlspecialchars($role) ?></p>
               </div>
-            </a>
-          </div>
-        <?php endforeach; ?>
+            </div>
+          </a>
+        </div>
+<?php endforeach; ?>
       </div>
 
-      <?php if ($selected_nick): ?>
-        <div class="text-center mt-5">
-          <a href="/authors/" class="btn btn-outline-primary">все авторы <i class="bi bi-arrow-right"></i></a>
-        </div>
-      <?php endif; ?>
+<?php if ($selected_nick): ?>
+      <div class="text-center mt-5">
+        <a href="/authors/" class="btn btn-outline-primary">все авторы <i class="bi bi-arrow-right"></i></a>
+      </div>
+<?php endif; ?>
     </div>
 
     <!-- right column — Announces -->
@@ -154,23 +151,22 @@ if ($selected_nick) {
       <div class="sidebar-sticky">
         <h2 class="h3 mb-4 pb-2 border-bottom">анонсы</h2>
         <div class="list-group list-group-flush border rounded shadow-sm">
-          <?php foreach ($announces as $item):
+<?php foreach ($announces as $item):
             $datetime = explode(" ", $item[0] ?? '') ?? [];
             $place    = explode(",", $item[1] ?? '') ?? [];
             $title    = $item[2] ?? '';
             $desc     = $item[3] ?? '';
             $href     = $item[5] ?? '#';
           ?>
-            <a href="<?= $href ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
-            <!--<a href="<?= $href ?>" class="list-group-item list-group-item-action px-4 py-3">-->
-              <div>
-                <small class="text-muted">
-                  <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?> · <?= htmlspecialchars($place[0]) ?>
-                </small>
-                <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
-              </div>
-            </a>
-          <?php endforeach; ?>
+          <a href="<?= $href ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
+            <div>
+              <small class="text-muted">
+                <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?> · <?= htmlspecialchars($place[0]) ?>
+              </small>
+              <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
+            </div>
+          </a>
+<?php endforeach; ?>
         </div>
         <div class="text-center mt-5">
           <a href="/" class="btn btn-outline-primary">все анонсы <i class="bi bi-arrow-right"></i></a>

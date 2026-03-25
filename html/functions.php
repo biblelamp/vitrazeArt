@@ -120,4 +120,41 @@ function shortName(string $fullName): string {
 
     return $firstName . ' ' . $initial . '.';
 }
+// detect gender by name: f(emale), m(ale), u(nknown)
+function detectGender($fullName): string {
+    // get only first word (name)
+    $parts = explode(' ', trim($fullName));
+    $name = mb_strtolower($parts[0]);
+
+    // list of male-names-exceptions
+    $maleExceptions = [
+        'никита', 'илья', 'фома', 'кузьма', 'лука', 'дима', 'саша', 'женя', 'валя'
+    ];
+
+    // list of female-names-exceptions
+    $femaleExceptions = [
+        'любовь', 'нина'
+    ];
+
+    if (in_array($name, $maleExceptions)) {
+        return 'm';
+    }
+
+    if (in_array($name, $femaleExceptions)) {
+        return 'f';
+    }
+
+    // main rules
+    $lastChar = mb_substr($name, -1);
+
+    if (in_array($lastChar, ['а', 'я'])) {
+        return 'f';
+    }
+
+    if (in_array($lastChar, ['й', 'н', 'р', 'м', 'т', 'б', 'в', 'г', 'д', 'ж', 'з', 'к', 'л', 'п', 'с', 'ф', 'х', 'ц', 'ч'])) {
+        return 'm';
+    }
+
+    return 'u';
+}
 ?>
