@@ -30,6 +30,10 @@ if ($selected_nick) {
         }
     }
 }
+// 404 page
+if ($author_item == null && $selected_nick != null) {
+    $author_item = ['ошибочка 404', $selected_nick . ' unknown', 'вы кого тут ищете? нету такого…'];
+}
 // read /data/authors/<selected_nick>.txt
 $author_detail = [];
 if ($selected_nick) {
@@ -49,8 +53,9 @@ if ($selected_nick) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Русскоязычные поэты, художники, музыканты и другие творческие люди, живущие в Праге и по всей Чехии">
   <title>
-    <?= $author_item ? htmlspecialchars($author_item[0] ?? 'Автор') . ' — ' : '' ?>
+    <?= $author_item ? htmlspecialchars($author_item[0] ?? 'Автор') . ' —' : '' ?>
     Авторы — Пражские витражи
   </title>
   <link href="/css/bootstrap.min.css" rel="stylesheet"><!-- v5.3.8 -->
@@ -97,7 +102,7 @@ if ($selected_nick) {
             <div class="col-md-8">
               <h1 class="h3 fw-bold mb-2"><?= htmlspecialchars($name) ?></h1>
               <p class="lead text-muted mb-3"><?= htmlspecialchars($role) ?></p>
-              <p class="text-muted mb-4">@<?= htmlspecialchars($nickname[0]) ?></p>
+              <p class="text-muted mb-4">@<?= htmlspecialchars(rawurldecode($nickname[0])) ?></p>
             </div>
           </div>
 <?php if (!empty($author_detail)): ?>
@@ -126,7 +131,7 @@ if ($selected_nick) {
             $href     = '/authors/' . $nickname[0];
         ?>
         <div class="col">
-          <a href="<?= $href ?>" class="text-decoration-none">
+          <a href="<?= htmlspecialchars($href) ?>" class="text-decoration-none">
             <div class="card h-100 border-0 shadow-sm author-card">
               <div class="card-body text-center p-4">
                 <img src="<?= htmlspecialchars($image) ?>" class="person-img mb-3" alt="<?= htmlspecialchars($name) ?>">
@@ -158,7 +163,7 @@ if ($selected_nick) {
             $desc     = $item[3] ?? '';
             $href     = $item[5] ?? '#';
           ?>
-          <a href="<?= $href ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
+          <a href="<?= htmlspecialchars($href) ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
             <div>
               <small class="text-muted">
                 <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?> · <?= htmlspecialchars($place[0]) ?>

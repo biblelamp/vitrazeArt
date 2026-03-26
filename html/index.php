@@ -10,13 +10,14 @@ $authors   = readBlocks('data/authors.txt');
 // shuffle the elements of the array
 shuffle($authors);
 // number of authors on the page
-$number_authors = 6;
+$number_authors = 10;
 ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Сообщество русскоязычных поэтов, художников, музыкантов и других творческих людей, живущих в Праге и по всей Чехии">
   <title>Пражские витражи — анонсы, репортажи, авторы</title>
   <link href="/css/bootstrap.min.css" rel="stylesheet"><!-- v5.3.8 -->
   <link href="/css/style.css" rel="stylesheet"><!-- my styles -->

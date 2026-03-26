@@ -109,7 +109,7 @@ function shortName(string $fullName): string {
     $firstName = $parts[0];
 
     // if only one name
-    if (count($parts) < 2) {
+    if (count($parts) < 2 || (count($parts) > 1 && mb_strlen($parts[1]) == 1)) {
         return $firstName;
     }
 

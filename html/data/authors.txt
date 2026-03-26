@@ -14,21 +14,21 @@ volkova
 lancelot
 поэт-романтик
 
-Лейла Бегим
-begim default-f
+Лейла́ Беги́м
+begim
 поэтесса и писатель
 
 Ольга Котенко
-kotenko default-f
+kotenko
 поэтесса
 
 Леонид Поторак
-potorak default-m
-преподаватель, поэт и писатель
+potorak
+преподаватель, поэт, прозаик
 
 Наталья Мухина
-fly default-f
-поэтесса и писатель
+fly
+поэтесса и прозаик
 
 Дарья Филиппская
 aria default-f
@@ -50,8 +50,8 @@ kazimov default-m
 zayachuk default-f
 журналист
 
-Вова Чинана
-vvowa default-m
+VV - Вова Чинана
+vowa.chinana
 поэт
 
 Александр Грачёв
@@ -171,8 +171,8 @@ levitski
 писатель-юморист
 
 Виолетта Этерова
-eterova default-f
-режиссёр и актриса
+violetta.eterova
+режиссер, писатель, сценарист
 
 Мария Степанова
 stepanova default-f
