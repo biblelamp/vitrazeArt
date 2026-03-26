@@ -1,5 +1,5 @@
 <?php
-// vitrazeArt.cz © 2026 version 0.2.2 by 25-Mar-26
+// vitrazeArt.cz © 2026 version 0.3.0 by 26-Mar-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -19,6 +19,12 @@ $number_authors = 10;
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Сообщество русскоязычных поэтов, художников, музыкантов и других творческих людей, живущих в Праге и по всей Чехии">
   <title>Пражские витражи — анонсы, репортажи, авторы</title>
+  <!-- Open Graph meta tags -->
+  <meta property="og:title" content="Пражские витражи — анонсы, репортажи, авторы">
+  <meta property="og:description" content="Сообщество русскоязычных поэтов, художников, музыкантов и других творческих людей, живущих в Праге и по всей Чехии">
+  <meta property="og:image" content="/images/logo.jpg">
+  <meta property="og:url" content="https://vitrazeart.cz/">
+  <meta property="og:type" content="website">
   <link href="/css/bootstrap.min.css" rel="stylesheet"><!-- v5.3.8 -->
   <link href="/css/style.css" rel="stylesheet"><!-- my styles -->
   <link rel="stylesheet" href="/css/bootstrap-icons.min.css"><!-- v1.13.1 -->
@@ -100,7 +106,7 @@ $number_authors = 10;
       </div>
 
       <div class="text-center mt-5">
-        <a href="#" class="btn btn-outline-primary">всё прошедшее <i class="bi bi-arrow-right"></i></a>
+        <a href="/reports" class="btn btn-outline-primary">всё прошедшее <i class="bi bi-arrow-right"></i></a>
       </div>
     </div>
 

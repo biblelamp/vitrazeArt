@@ -1,5 +1,5 @@
 <?php
-// authors.php version 0.3 by 25-Mar-26
+// authors.php version 0.4 by 26-Mar-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -47,6 +47,10 @@ shuffle($authors);
 if ($selected_nick) {
     $authors = array_slice($authors, 0, 4);
 }
+// image for preview
+$og_image = $author_item ? '/images/authors/' . $author_item[1] . '.jpg' : '/images/logo.jpg';
+// title
+$title = ($author_item ? htmlspecialchars($author_item[0] ?? 'Автор') . ' — ' : '') . 'Авторы — Пражские витражи';
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -54,10 +58,13 @@ if ($selected_nick) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Русскоязычные поэты, художники, музыканты и другие творческие люди, живущие в Праге и по всей Чехии">
-  <title>
-    <?= $author_item ? htmlspecialchars($author_item[0] ?? 'Автор') . ' —' : '' ?>
-    Авторы — Пражские витражи
-  </title>
+  <title><?= $title ?></title>
+  <!-- Open Graph meta tags -->
+  <meta property="og:title" content="<?= $title ?>">
+  <meta property="og:description" content="Русскоязычные поэты, художники, музыканты и другие творческие люди, живущие в Праге и по всей Чехии">
+  <meta property="og:image" content="<?= $og_image ?>">
+  <meta property="og:url" content="https://vitrazeart.cz/">
+  <meta property="og:type" content="website">
   <link href="/css/bootstrap.min.css" rel="stylesheet"><!-- v5.3.8 -->
   <link href="/css/style.css" rel="stylesheet"><!-- my styles -->
   <link rel="stylesheet" href="/css/bootstrap-icons.min.css"><!-- v1.13.1 -->

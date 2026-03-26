@@ -151,8 +151,8 @@ sahakyan default-f
 художник
 
 Анна Скорко
-skorko default-f
-богемный человек
+skorko
+художник, гид, актриса
 
 Дима Халиков
 halikov default-m
