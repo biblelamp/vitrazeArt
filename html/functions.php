@@ -1,4 +1,6 @@
 <?php
+// functions.php version 0.4 by 28-Mar-26
+
 // reading blocks of lines from a file (delimiter: empty line)
 function readBlocks($filePath) {
     if (!file_exists($filePath)) return [];
@@ -74,17 +76,31 @@ function parseMarkdownLinks($text) {
 }
 // parse Markdown
 function parseMarkdown($text) {
-    // to avoid XSS
-    $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
-
     // horizontal separator (---)
     $text = preg_replace('/\n*\s*---\s*\n*/', '<hr>', $text);
+
+    // blockquote (bloks begins with >)
+    $text = preg_replace_callback(
+        '/(?:^|\n)(>.*(?:\n>.*)*)/m',
+        function ($matches) {
+            $quote = $matches[1];
+
+            // убираем символы > в начале каждой строки
+            $quote = preg_replace('/^>\s?/m', '', $quote);
+
+            // рекурсивно парсим markdown внутри цитаты (чтобы работали жирный, курсив, ссылки и т.д.)
+            $quote = parseMarkdown($quote);   // внимание: рекурсия!
+
+            return '<figure class="my-3"><blockquote class="border-0 bg-light p-3 rounded-3">' . $quote . '</blockquote></figure>';
+        },
+        $text
+    );
 
     // links [name](url)
     $text = preg_replace_callback('/\[(.*?)\]\((.*?)\)/', function ($matches) {
         $name = $matches[1];
         $url = $matches[2];
-        return '<a href="' . $url . '" target="_blank">' . $name . '</a>';
+        return '<a href="' . $url . (str_starts_with($url, 'http')? ' target="_blank"' : '') . '">' . $name . '</a>';
     }, $text);
 
     // italic **text**
@@ -119,42 +135,5 @@ function shortName(string $fullName): string {
     $initial = mb_substr($lastName, 0, 1);
 
     return $firstName . ' ' . $initial . '.';
-}
-// detect gender by name: f(emale), m(ale), u(nknown)
-function detectGender($fullName): string {
-    // get only first word (name)
-    $parts = explode(' ', trim($fullName));
-    $name = mb_strtolower($parts[0]);
-
-    // list of male-names-exceptions
-    $maleExceptions = [
-        'никита', 'илья', 'фома', 'кузьма', 'лука', 'дима', 'саша', 'женя', 'валя'
-    ];
-
-    // list of female-names-exceptions
-    $femaleExceptions = [
-        'любовь', 'нина'
-    ];
-
-    if (in_array($name, $maleExceptions)) {
-        return 'm';
-    }
-
-    if (in_array($name, $femaleExceptions)) {
-        return 'f';
-    }
-
-    // main rules
-    $lastChar = mb_substr($name, -1);
-
-    if (in_array($lastChar, ['а', 'я'])) {
-        return 'f';
-    }
-
-    if (in_array($lastChar, ['й', 'н', 'р', 'м', 'т', 'б', 'в', 'г', 'д', 'ж', 'з', 'к', 'л', 'п', 'с', 'ф', 'х', 'ц', 'ч'])) {
-        return 'm';
-    }
-
-    return 'u';
 }
 ?>

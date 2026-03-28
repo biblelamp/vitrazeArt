@@ -106,6 +106,7 @@ $title = $event_item
           $title     = $event_item[2] ?? 'Без названия';
           $desc      = $event_item[3] ?? '';
           $image     = $event_item[4] ?? '';
+          $href      = $first_item[5] ?? '';
         ?>
         <div class="card mb-4 border-0 shadow-sm overflow-hidden">
           <div class="row g-0">

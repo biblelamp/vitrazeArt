@@ -112,7 +112,7 @@ babaeva default-f
 
 Анна Кирсанова
 kirsanova
-график
+архитектор и живописец
 
 Владислав Корнешков
 korneskov default-m
@@ -159,8 +159,8 @@ halikov default-m
 ювелир
 
 Ирина Беспалова
-bespalova default-f
-писатель
+bespalova
+журналист и писатель
 
 Анна Демьяненко
 damiani default-f
@@ -177,3 +177,11 @@ violetta.eterova
 Мария Степанова
 stepanova default-f
 data-аналитик
+
+Виктория Климова
+tomazina default-f
+невролог и репортёр
+
+Бронислава Волкова
+vlkova default-f
+поэтесса, переводчица, прозаик
