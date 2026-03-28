@@ -1,12 +1,12 @@
 <?php
-// vitrazeArt.cz © 2026 version 0.3.0 by 26-Mar-26
+// vitrazeArt.cz © 2026 version 0.4.0 by 27-Mar-26
 
 require_once __DIR__ . '/functions.php';
 
 // read all files
-$announces = filterByDate(readBlocks('data/announces.txt'));
-$reports   = readBlocks('data/reports.txt');
-$authors   = readBlocks('data/authors.txt');
+$events  = filterByDate(readBlocks('data/events.txt'));
+$reports = readBlocks('data/reports.txt');
+$authors = readBlocks('data/authors.txt');
 // shuffle the elements of the array
 shuffle($authors);
 // number of authors on the page
@@ -17,11 +17,11 @@ $number_authors = 10;
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Сообщество русскоязычных поэтов, художников, музыкантов и других творческих людей, живущих в Праге и по всей Чехии">
+  <meta name="description" content="Сообщество русскоязычных поэтов, художников и музыкантов в Праге и Чехии. Публикации, авторы, творчество и культурная жизнь.">
   <title>Пражские витражи — анонсы, репортажи, авторы</title>
   <!-- Open Graph meta tags -->
   <meta property="og:title" content="Пражские витражи — анонсы, репортажи, авторы">
-  <meta property="og:description" content="Сообщество русскоязычных поэтов, художников, музыкантов и других творческих людей, живущих в Праге и по всей Чехии">
+  <meta property="og:description" content="Творческое сообщество в Праге и Чехии: поэты, художники, музыканты. Найди своих или опубликуй своё творчество.">
   <meta property="og:image" content="/images/logo.jpg">
   <meta property="og:url" content="https://vitrazeart.cz/">
   <meta property="og:type" content="website">
@@ -37,14 +37,22 @@ $number_authors = 10;
   <main class="container-fluid px-4 px-lg-5 my-4 my-lg-5">
     <div class="row g-4 g-lg-5">
 
-    <!-- Left column – announcements + reports -->
+    <!-- Left column – events + reports -->
     <div class="col-lg-8">
+      <!-- About Us -->
+      <h2 class="h3 mb-4 pb-2 border-bottom">кто мы</h2>
+      <div class="mb-4 text-muted">
+        <p class="mb-2"><strong>Пражские витражи</strong> – сообщество русскоязычных поэтов, писателей, художников, сонграйтеров, музыкантов и других творческих людей в Праге и по всей Чехии.</p>
+        <p class="mb-2">На сайте публикуются <a href="/events">анонсы</a> предстоящих творческих мероприятий, <a href="/reports">репортажи</a> о прошедших встречах и вечерах, а также <a href="/authors">страницы авторов</a> с их произведениями.
+        <p class="mb-2">Мы объединяем и поддерживаем всех, кому важно делиться творчеством и находить единомышленников. Проект открыт для начинающих и опытных авторов. Живёте в Чехии и занимаетесь творчеством? Присоединяйтесь, публикуйте свои работы и вдохновляйтесь вместе с нами.</p>
+      </div>
+
       <h2 class="h3 mb-4 pb-2 border-bottom">анонсы</h2>
 
-      <!-- Announcements -->
-      <div class="mb-5">
+      <!-- Events -->
+      <div class="mb-4">
 
-<?php foreach ($announces as $index => $item):
+<?php foreach ($events as $index => $item):
           $datetime = explode(" ", $item[0]) ?? '';
           $place    = $item[1] ?? '';
           $title    = $item[2] ?? 'Без названия';
@@ -110,7 +118,7 @@ $number_authors = 10;
       </div>
     </div>
 
-    <!-- right column – Authors -->
+    <!-- Right column – Authors -->
     <div class="col-lg-4">
       <div class="sidebar-sticky">
         <h2 class="h3 mb-4 pb-2 border-bottom">авторы</h2>

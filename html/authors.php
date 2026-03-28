@@ -4,8 +4,8 @@
 require_once __DIR__ . '/functions.php';
 
 // read files
-$announces = filterByDate(readBlocks('data/announces.txt'));
-$authors   = readBlocks('data/authors.txt');
+$events  = filterByDate(readBlocks('data/events.txt'));
+$authors = readBlocks('data/authors.txt');
 
 // parse url
 $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
@@ -158,12 +158,12 @@ $title = ($author_item ? htmlspecialchars($author_item[0] ?? 'Автор') . ' �
 <?php endif; ?>
     </div>
 
-    <!-- right column — Announces -->
+    <!-- right column — events -->
     <div class="col-lg-4">
       <div class="sidebar-sticky">
         <h2 class="h3 mb-4 pb-2 border-bottom">анонсы</h2>
         <div class="list-group list-group-flush border rounded shadow-sm">
-<?php foreach ($announces as $item):
+<?php foreach ($events as $item):
             $datetime = explode(" ", $item[0] ?? '') ?? [];
             $place    = explode(",", $item[1] ?? '') ?? [];
             $title    = $item[2] ?? '';
@@ -181,7 +181,7 @@ $title = ($author_item ? htmlspecialchars($author_item[0] ?? 'Автор') . ' �
 <?php endforeach; ?>
         </div>
         <div class="text-center mt-5">
-          <a href="/" class="btn btn-outline-primary">все анонсы <i class="bi bi-arrow-right"></i></a>
+          <a href="/events" class="btn btn-outline-primary">все анонсы <i class="bi bi-arrow-right"></i></a>
         </div>
       </div>
     </div>

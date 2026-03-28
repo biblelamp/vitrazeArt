@@ -2,6 +2,8 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
+RewriteRule ^search(/.*)?$ search.php [L]
+RewriteRule ^events(/.*)?$ events.php [L]
 RewriteRule ^reports(/.*)?$ reports.php [L]
 RewriteRule ^authors(/.*)?$ authors.php [L]
 RewriteRule ^@.*$ authors.php [L]

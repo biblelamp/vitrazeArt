@@ -1,0 +1,230 @@
+<?php
+// events.php version 0.1 by 27-Mar-26
+
+require_once __DIR__ . '/functions.php';
+
+// read files
+$all_events = readBlocks('data/events.txt');
+$events     = filterByDate($all_events);   // only future
+$authors    = readBlocks('data/authors.txt');
+
+shuffle($authors);
+$number_authors = 10;
+
+$uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+$parts = explode('/', $uri);
+
+$selected_slug = null;
+$event_item = null;
+$first_item = null;
+
+if (count($parts) >= 5 && $parts[0] === 'events') {
+    $year  = $parts[1] ?? '';
+    $month = str_pad($parts[2] ?? '', 2, '0', STR_PAD_LEFT);
+    $day   = str_pad($parts[3] ?? '', 2, '0', STR_PAD_LEFT);
+    $code  = strtolower($parts[4] ?? '');
+
+    if ($year && $month && $day && $code) {
+        $selected_slug = "{$year}-{$month}-{$day}-{$code}";
+
+        // seek event by href
+        foreach ($all_events as $key => $item) {
+            if ('/' . $uri === $item[5]) {
+                $event_item = $item;
+                break;
+            }
+        }
+        // remove found item
+        foreach ($events as $key => $item) {
+            if ('/' . $uri === $item[5]) {
+                unset($events[$key]); // remove found item
+                break;
+            }
+        }
+    }
+}
+
+if (count($parts) == 1) {
+    $first_item = $events[0];
+    unset($events[0]);
+}
+
+// 404 page
+if (!$event_item && count($parts) > 1) {
+    $event_item = ['', '', 'ошибка 404: анонс не найден', '', ''];
+}
+
+// read event from file /data/events/...
+$event_detail = [];
+if ($selected_slug) {
+    $detail_path = "data/events/{$selected_slug}.txt";
+    if (file_exists($detail_path)) {
+        $event_detail = readBlocks($detail_path);
+    }
+}
+
+$title = $event_item 
+    ? htmlspecialchars($event_item[2] ?? 'Анонс') . ' — Пражские витражи' 
+    : 'Пражские витражи — анонсы, репортажи, авторы';
+?>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Сообщество русскоязычных поэтов, художников и музыкантов в Праге и Чехии. Публикации, авторы, творчество и культурная жизнь.">
+  <title><?= $title ?></title>
+  <!-- Open Graph meta tags -->
+  <meta property="og:title" content="<?= $title ?>">
+  <meta property="og:description" content="Творческое сообщество в Праге и Чехии: поэты, художники, музыканты. Найди своих или опубликуй своё творчество.">
+  <meta property="og:image" content="/images/logo.jpg">
+  <meta property="og:url" content="https://vitrazeart.cz/">
+  <meta property="og:type" content="website">
+  <link href="/css/bootstrap.min.css" rel="stylesheet"><!-- v5.3.8 -->
+  <link href="/css/style.css" rel="stylesheet"><!-- my styles -->
+  <link rel="stylesheet" href="/css/bootstrap-icons.min.css"><!-- v1.13.1 -->
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+</head>
+<body class="bg-light">
+
+  <?php include 'header.html'; ?>
+
+  <main class="container-fluid px-4 px-lg-5 my-4 my-lg-5">
+    <div class="row g-4 g-lg-5">
+
+    <!-- Left column – events + reports -->
+    <div class="col-lg-8">
+      <!-- Events -->
+      <?php if ($first_item): ?>
+        <h2 class="h3 mb-4 pb-2 border-bottom">анонсы</h2>
+      <?php endif; ?>
+      <div class="mb-4">
+
+        <?php if ($event_item):
+          $date_time = explode(" ", $event_item[0] ?? '') ?? [];
+          $place     = $event_item[1] ?? '';
+          $title     = $event_item[2] ?? 'Без названия';
+          $desc      = $event_item[3] ?? '';
+          $image     = $event_item[4] ?? '';
+        ?>
+        <div class="card mb-4 border-0 shadow-sm overflow-hidden">
+          <div class="row g-0">
+            <?php if ($image): ?>
+            <div class="col-md-4">
+              <a href="<?= $href ?>">
+                <img src="<?= htmlspecialchars($image) ?>" class="img-fluid announce-img" alt="<?= htmlspecialchars($title) ?>">
+              </a>
+            </div>
+            <?php endif; ?>
+            <div class="col-md-8">
+              <div class="card-body">
+                <?php if ($place): ?>
+                <div class="text-muted small mb-2">
+                  <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?> · <?= parseMarkdownLinks($place) ?>
+                </div>
+                <?php endif; ?>
+                <h5 class="card-title fs-4 mb-3"><?= htmlspecialchars($title) ?></h5>
+              </div>
+            </div>
+          </div>
+          <div class="card-body pt-0">
+              <?php if (!empty($event_detail)): ?>
+              <hr class="my-4">
+              <div class="report-content">
+                <?php foreach ($event_detail as $block): ?>
+                  <p class="mb-3"><?= nl2br(parseMarkdown(implode("\n", $block))) ?></p>
+                <?php endforeach; ?>
+              </div>
+              <?php else: ?>
+                <p class="text-muted">request path: <?= $uri ?></p>
+              <?php endif; ?>
+          </div>
+        </div>
+        <?php endif; ?>
+        <?php if ($first_item):
+          $date_time = explode(" ", $first_item[0] ?? '') ?? [];
+          $place     = $first_item[1] ?? '';
+          $title     = $first_item[2] ?? 'Без названия';
+          $desc      = $first_item[3] ?? '';
+          $image     = $first_item[4] ?? '';
+          $href      = $first_item[5] ?? '';
+        ?>
+        <div class="card mb-4 border-0 shadow-sm overflow-hidden">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <a href="<?= $href ?>">
+                <img src="<?= htmlspecialchars($image) ?>" class="img-fluid announce-img" alt="<?= htmlspecialchars($title) ?>">
+              </a>
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <div class="text-muted small mb-2">
+                  <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?> · <?= parseMarkdownLinks($place) ?>
+                </div>
+                <h5 class="card-title fs-4 mb-3"><?= htmlspecialchars($title) ?></h5>
+                <p class="card-text text-muted mb-3"><?= htmlspecialchars($desc) ?></p>
+                <a href="<?= htmlspecialchars($href) ?>" class="btn btn-sm btn-outline-primary">подробнее <i class="bi bi-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <?php endif; ?>
+
+<?php foreach ($events as $item):
+          $datetime = explode(" ", $item[0]) ?? '';
+          $place    = $item[1] ?? '';
+          $title    = $item[2] ?? 'Без названия';
+          $desc     = $item[3] ?? '';
+          $image    = $item[4] ?? '';
+          $href     = $item[5] ?? '';
+        ?>
+        <div class="border-bottom py-3">
+          <div class="text-muted small mb-1">
+             <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?> · <?= parseMarkdownLinks($place) ?>
+          </div>
+          <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
+          <p class="text-muted mb-2"><?= htmlspecialchars($desc) ?>… <a href="<?= htmlspecialchars($href) ?>">подробнее <i class="bi bi-arrow-right"></i></a></p>
+        </div>
+<?php endforeach; ?>
+
+      </div>
+
+      <div class="text-center mt-5">
+        <a href="/reports" class="btn btn-outline-primary">отчёты и репортажи <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </div>
+
+    <!-- Right column – Authors -->
+    <div class="col-lg-4">
+      <div class="sidebar-sticky">
+        <h2 class="h3 mb-4 pb-2 border-bottom">авторы</h2>
+        <div class="list-group list-group-flush">
+<?php foreach (array_slice($authors, 0, $number_authors) as $item):
+            $name     = $item[0] ?? '';
+            $nickname = explode(" ", $item[1] ?? '') ?? [];
+            $role     = $item[2] ?? '';
+            $image    = '/images/authors/' . (count($nickname) > 1 ? $nickname[1] : $nickname[0]) . '.jpg';
+            $href     = '/authors/' . $nickname[0];
+          ?>
+          <a href="<?= $href ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
+            <img src="<?= htmlspecialchars($image) ?>" class="person-img" alt="<?= htmlspecialchars($name) ?>">
+            <div>
+              <h5 class="mb-1"><?= shortName($name) ?></h5>
+              <small class="text-muted"><?= htmlspecialchars($role) ?></small>
+            </div>
+          </a>
+<?php endforeach; ?>
+        </div>
+        <div class="text-center mt-5">
+          <a href="/authors/" class="btn btn-outline-primary">все авторы <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+    </div>
+  </main>
+
+  <?php include 'footer.html'; ?>
+
+  <script src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

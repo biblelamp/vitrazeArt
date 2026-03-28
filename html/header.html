@@ -8,9 +8,18 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarContent">
-        <form class="d-flex ms-auto my-2 my-lg-0" style="max-width: 420px; width: 100%;">
-          <input class="form-control me-2 rounded-pill" type="search" placeholder="поиск по анонсам, событиям и авторам..." aria-label="Поиск">
-          <button class="btn btn-outline-secondary rounded-pill" type="submit"><i class="bi bi-search"></i></button>
+        <form id="searchForm" class="d-flex ms-auto my-2 my-lg-0" style="max-width: 420px; width: 100%;" action="/search" method="GET">
+          <input 
+            id="searchInput"
+            class="form-control me-2 rounded-pill" 
+            type="search" 
+            name="text"
+            value="<?= htmlspecialchars($_GET['text'] ?? '') ?>"
+            placeholder="поиск по анонсам, событиям и авторам..." 
+            aria-label="Поиск">
+          <button class="btn btn-outline-secondary rounded-pill" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
         </form>
       </div>
     </div>

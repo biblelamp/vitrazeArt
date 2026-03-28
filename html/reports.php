@@ -4,8 +4,8 @@
 require_once __DIR__ . '/functions.php';
 
 // read files
-$announces = filterByDate(readBlocks('data/announces.txt'));
-$all_reports = readBlocks('data/reports.txt');
+$events  = filterByDate(readBlocks('data/events.txt'));
+$reports = readBlocks('data/reports.txt');
 
 // parse URL: /reports/2026/03/24/drc
 $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
@@ -24,10 +24,10 @@ if (count($parts) >= 5 && $parts[0] === 'reports') {
         $selected_slug = "{$year}-{$month}-{$day}-{$code}";
         
         // Находим выбранный отчёт в списке
-        foreach ($all_reports as $key => $item) {
+        foreach ($reports as $key => $item) {
             if ('/' . $uri === $item[3]) {
                 $report_item = $item;
-                unset($all_reports[$key]); // убираем из списка остальных
+                unset($reports[$key]); // убираем из списка остальных
                 break;
             }
         }
@@ -95,8 +95,8 @@ $title = $report_item
 
        <!-- Card of report -->
         <?php if ($report_item): 
-            $date   = $report_item[0] ?? '';
-            $title  = $report_item[1] ?? 'Без названия';
+            $date  = $report_item[0] ?? '';
+            $title = $report_item[1] ?? 'Без названия';
         ?>
        <div class="card border-0 shadow-sm mb-5">
           <div class="card-body p-4 p-lg-5">
@@ -122,7 +122,7 @@ $title = $report_item
         </h2>
 
         <div class="list-group list-group-flush border rounded shadow-sm">
-          <?php foreach ($all_reports as $item): 
+          <?php foreach ($reports as $item): 
               $date   = $item[0] ?? '';
               $title  = $item[1] ?? 'Без названия';
               $desc   = $item[2] ?? '';
@@ -146,22 +146,22 @@ $title = $report_item
 
       </div>
 
-      <!-- RIGHT COLUMN — Анонсы -->
+      <!-- Right colums — Events -->
       <div class="col-lg-4">
         <div class="sidebar-sticky">
           <h2 class="h3 mb-4 pb-2 border-bottom">анонсы</h2>
           <div class="list-group list-group-flush border rounded shadow-sm">
-            <?php foreach ($announces as $item):
-                $datetime = explode(" ", $item[0] ?? '') ?? [];
-                $place    = explode(",", $item[1] ?? '') ?? [];
-                $title    = $item[2] ?? '';
-                $desc     = $item[3] ?? '';
-                $href     = $item[5] ?? '#';
+            <?php foreach ($events as $item):
+                $date_time = explode(" ", $item[0] ?? '') ?? [];
+                $place     = explode(",", $item[1] ?? '') ?? [];
+                $title     = $item[2] ?? '';
+                $desc      = $item[3] ?? '';
+                $href      = $item[5] ?? '#';
             ?>
               <a href="<?= htmlspecialchars($href) ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
                 <div>
                   <small class="text-muted">
-                    <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1] ?? '') ?> · <?= htmlspecialchars($place[0] ?? '') ?>
+                    <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1] ?? '') ?> · <?= htmlspecialchars($place[0] ?? '') ?>
                   </small>
                   <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
                 </div>
@@ -170,7 +170,7 @@ $title = $report_item
           </div>
 
           <div class="text-center mt-5">
-            <a href="/" class="btn btn-outline-primary">все анонсы <i class="bi bi-arrow-right"></i></a>
+            <a href="/events" class="btn btn-outline-primary">все анонсы <i class="bi bi-arrow-right"></i></a>
           </div>
         </div>
       </div>

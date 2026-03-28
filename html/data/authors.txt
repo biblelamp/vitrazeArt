@@ -39,7 +39,7 @@ javageek
 программист и сонграйтер
 
 Ольга Бекреева
-bekreeva default-f
+bekreeva
 музыкант и сонграйтер
 
 Максуд Кязимов
@@ -111,7 +111,7 @@ babaeva default-f
 мозаика
 
 Анна Кирсанова
-kirsanova default-f
+kirsanova
 график
 
 Владислав Корнешков
