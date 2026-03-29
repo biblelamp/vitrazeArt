@@ -1,47 +1,68 @@
+2026-03-06 17:30
+Galerie Beseder, Lihovarská 1060/12, https://mapy.com/s/pokonugoda
+Открытие выставки «Гельман – еврей»
+В рамках фестиваля Дни Израиля 2026 в Праге Марат Гельман представит свои работы. Вход свободный
+/images/events/2026-03-06-gelman.jpg
+/events/2026/03/06/gelman
+
 2026-03-08 18:00
-Dům národnostních menšin, [Vocelova 602/3](https://mapy.com/s/kuzekakula)
+Dům národnostních menšin, Vocelova 602/3, https://mapy.com/s/kuzekakula
 Открытие выставки «Женщина и кошка»
 Пять пражских художниц представят свои работы на выставке картин. Вход свободный
 /images/events/2026-03-08-woman-and-cat.jpg
 /events/2026/03/08/woman-and-cat
 
 2026-03-24 19:00
-Café bar Kolíbka, [Řeznická 1891/10](https://mapy.com/s/cojufulego)
+Café bar Kolíbka, Řeznická 1891/10, https://mapy.com/s/cojufulego
 Tворческий вечер Dark Romantic Club
 Вечер пройдёт в традиционном интерактивном формате с обсуждением творчества. Вход: free donation (от 100 крон)
 /images/events/2026-03-24-drc.jpg
 /events/2026/03/24/drc
 
 2026-03-26 19:00
-Galerie Lapidárium, [Rámová 735/6](https://mapy.com/s/lekucakeju)
+Galerie Lapidárium, Rámová 735/6, https://mapy.com/s/lekucakeju
 Концерт еврейской музыки
 Известный скрипач Александр Шонерт выступит в сопровождении пианистки Наталии Шонерт. Вход: free donation (от 200 крон)
 /images/events/2026-03-26-shonert.jpg
 /events/2026/03/26/shonert
 
+2026-03-29 18:00
+Бар Lost And Found, Žitná 1764/11, https://mapy.com/s/gubepafage
+Фотовыставка Анны Скорко и Антона Сергиенко
+Фотографии, позволяющие поймать момент, уходящий навсегда. Поэзия и музыка, дружеское общение. Вход свободный
+/images/events/2026-03-29-fokus-zivota.jpg
+/events/2026/03/29/fokus-zivota
+
 2026-03-29 15:00
-Design & Mosaic Art Studio, [Kouřimská 2293/30](https://mapy.com/s/gafacomodu)
+Design & Mosaic Art Studio, [Kouřimská 2293/30, https://mapy.com/s/gafacomodu
 Открытие студии мозаики
 Камерный вечер, где искусство и вино встречаются за одним столом. Стоимость: 100 Kč (по предварительной записи)
 /images/events/2026-03-29-mozaika.jpg
 /events/2026/03/29/mozaika
 
+2026-04-10 17:00
+Galerie Konvent, Vrchlického 170/3, Mikulov, https://mapy.com/s/mubagevote
+Художественная выставка Křehké napětí
+Анна Кирсанова представит работы, демонстрирующие развитие её художественного языка за последние три года. Вход свободный
+/images/events/2026-04-10-krehke-napeti.jpg
+/events/2026/04/10/krehke-napeti
+
 2026-04-11 17:30
-Бар Lost And Found, [Žitná 1764/11](https://mapy.com/s/gubepafage)
+Бар Lost And Found, Žitná 1764/11, https://mapy.com/s/gubepafage
 Творческий вечер Брониславы Волковой
 Встреча с поэтессой, эссеисткой и переводчицей Брониславой Волковой. Стихи в авторском исполнении. Вход свободный
 /images/events/2026-04-11-volkova.jpg
 /events/2026/04/11/volkova
 
 2026-04-18 18:00
-Pelmeňárna, [náměstí Jiřího z Poděbrad 1552/3](https://mapy.com/s/boseraluke)
+Pelmeňárna, náměstí Jiřího z Poděbrad 1552/3, https://mapy.com/s/boseraluke
 Вечер юмора «Смехотерапия»
 Пражский писатель-сатирик Сергей Левицкий приглашает друзей на свой творческий вечер. Вход свободный
 /images/events/2026-04-18-levitski.jpg
 /events/2026/04/18/levitski
 
 2026-05-16 10:00
-Dům národnostních menšin, [Vocelova 602/3](https://mapy.com/s/kuzekakula)
+Dům národnostních menšin, Vocelova 602/3, https://mapy.com/s/kuzekakula
 Открытие фестиваля «Эмигрантская лира»
 Aссоциация «Эмигрантская лира» (Александр Мельник, Бельгия) проводит Международный поэтический фестиваль в Праге
 /images/events/2026-05-16-festival.jpg

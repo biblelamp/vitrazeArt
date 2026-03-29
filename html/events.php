@@ -1,5 +1,5 @@
 <?php
-// events.php version 0.1 by 27-Mar-26
+// events.php version 0.3 by 29-Mar-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -100,9 +100,9 @@ $title = $event_item
       <?php endif; ?>
       <div class="mb-4">
 
-        <?php if ($event_item):
+<?php if ($event_item):
           $date_time = explode(" ", $event_item[0] ?? '') ?? [];
-          $place     = $event_item[1] ?? '';
+          $place     = explode(",", $event_item[1] ?? '') ?? [];
           $title     = $event_item[2] ?? 'Без названия';
           $desc      = $event_item[3] ?? '';
           $image     = $event_item[4] ?? '';
@@ -112,25 +112,27 @@ $title = $event_item
           <div class="row g-0">
             <?php if ($image): ?>
             <div class="col-md-4">
-              <a href="<?= $href ?>">
-                <img src="<?= htmlspecialchars($image) ?>" class="img-fluid announce-img" alt="<?= htmlspecialchars($title) ?>">
-              </a>
+              <img src="<?= htmlspecialchars($image) ?>" class="img-fluid announce-img" alt="<?= htmlspecialchars($title) ?>">
             </div>
             <?php endif; ?>
             <div class="col-md-8">
               <div class="card-body">
                 <?php if ($place): ?>
                 <div class="text-muted small mb-2">
-                  <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?> · <?= parseMarkdownLinks($place) ?>
+                  <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?>
+                  · <?= htmlspecialchars(trim($place[0])) ?>
+                  <i class="bi bi-geo-alt"></i> <a href="<?= htmlspecialchars(trim($place[2])) ?>" target="_blank">
+                    <?= htmlspecialchars(trim($place[1])) ?>
+                  </a>
                 </div>
+                <hr class="my-3">
                 <?php endif; ?>
                 <h5 class="card-title fs-4 mb-3"><?= htmlspecialchars($title) ?></h5>
               </div>
             </div>
           </div>
-          <div class="card-body pt-0">
+          <div class="card-body pt-3 p-lg-4">
               <?php if (!empty($event_detail)): ?>
-              <hr class="my-4">
               <div class="report-content">
                 <?php foreach ($event_detail as $block): ?>
                   <p class="mb-3"><?= nl2br(parseMarkdown(implode("\n", $block))) ?></p>
@@ -144,7 +146,7 @@ $title = $event_item
         <?php endif; ?>
         <?php if ($first_item):
           $date_time = explode(" ", $first_item[0] ?? '') ?? [];
-          $place     = $first_item[1] ?? '';
+          $place     = explode(",", $first_item[1] ?? '') ?? [];
           $title     = $first_item[2] ?? 'Без названия';
           $desc      = $first_item[3] ?? '';
           $image     = $first_item[4] ?? '';
@@ -160,7 +162,8 @@ $title = $event_item
             <div class="col-md-8">
               <div class="card-body">
                 <div class="text-muted small mb-2">
-                  <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?> · <?= parseMarkdownLinks($place) ?>
+                  <i class="bi bi-calendar-event"></i> <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?>
+                  <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0]) ?>
                 </div>
                 <h5 class="card-title fs-4 mb-3"><?= htmlspecialchars($title) ?></h5>
                 <p class="card-text text-muted mb-3"><?= htmlspecialchars($desc) ?></p>
@@ -172,16 +175,17 @@ $title = $event_item
         <?php endif; ?>
 
 <?php foreach ($events as $item):
-          $datetime = explode(" ", $item[0]) ?? '';
-          $place    = $item[1] ?? '';
-          $title    = $item[2] ?? 'Без названия';
-          $desc     = $item[3] ?? '';
-          $image    = $item[4] ?? '';
-          $href     = $item[5] ?? '';
+          $date_time = explode(" ", $item[0]) ?? '';
+          $place     = explode(",", $item[1] ?? '') ?? [];
+          $title     = $item[2] ?? 'Без названия';
+          $desc      = $item[3] ?? '';
+          $image     = $item[4] ?? '';
+          $href      = $item[5] ?? '';
         ?>
         <div class="border-bottom py-3">
           <div class="text-muted small mb-1">
-             <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?> · <?= parseMarkdownLinks($place) ?>
+             <i class="bi bi-calendar-event"></i> <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?>
+             <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0]) ?>
           </div>
           <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
           <p class="text-muted mb-2"><?= htmlspecialchars($desc) ?>… <a href="<?= htmlspecialchars($href) ?>">подробнее <i class="bi bi-arrow-right"></i></a></p>

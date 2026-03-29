@@ -1,5 +1,5 @@
 <?php
-// vitrazeArt.cz © 2026 version 0.4.1 by 27-Mar-26
+// vitrazeArt.cz © 2026 version 0.4.2 by 29-Mar-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -7,8 +7,10 @@ require_once __DIR__ . '/functions.php';
 $events  = filterByDate(readBlocks('data/events.txt'));
 $reports = readBlocks('data/reports.txt');
 $authors = readBlocks('data/authors.txt');
+
 // shuffle the elements of the array
 shuffle($authors);
+
 // number of authors on the page
 $number_authors = 10;
 ?>
@@ -41,10 +43,13 @@ $number_authors = 10;
     <div class="col-lg-8">
       <!-- About Us -->
       <h2 class="h3 mb-4 pb-2 border-bottom">кто мы</h2>
-      <div class="mb-4 text-muted">
-        <p class="mb-2"><strong>Пражские витражи</strong> – сообщество русскоязычных поэтов, писателей, художников, сонграйтеров, музыкантов и других творческих людей в Праге и по всей Чехии.</p>
-        <p class="mb-2">На сайте публикуются <a href="/events">анонсы</a> предстоящих творческих мероприятий, <a href="/reports">репортажи</a> о прошедших встречах и вечерах, а также <a href="/authors">страницы авторов</a> с их произведениями.
-        <p class="mb-2">Мы объединяем и поддерживаем всех, кому важно делиться творчеством и находить единомышленников. Проект открыт для начинающих и опытных авторов. Живёте в Чехии и занимаетесь творчеством? Присоединяйтесь, публикуйте свои работы и вдохновляйтесь вместе с нами.</p>
+      <div class="mb-4">
+        <div class="card mb-4 border-0 shadow-sm overflow-hidden">
+          <div class="card-body">
+            <p><strong>Пражские витражи</strong> – сообщество русскоязычных поэтов, писателей, художников, сонграйтеров, музыкантов и других творческих людей в Праге и по всей Чехии. На сайте публикуются <a href="https://vitrazeart.cz/events">анонсы</a> предстоящих и <a href="https://vitrazeart.cz/reports">репортажи</a> о прошедших мероприятиях, а также <a href="https://vitrazeart.cz/authors">страницы авторов</a> с их произведениями.</p>
+            <p>Мы объединяем и поддерживаем всех, кто желает делиться творчеством и ищет единомышленников. Проект открыт и для начинающих, и для опытных авторов. Живёте в Чехии и занимаетесь творчеством? Присоединяйтесь!</p>
+          </div>
+        </div>
       </div>
 
       <h2 class="h3 mb-4 pb-2 border-bottom">анонсы</h2>
@@ -53,14 +58,14 @@ $number_authors = 10;
       <div class="mb-4">
 
 <?php foreach ($events as $index => $item):
-          $datetime = explode(" ", $item[0]) ?? '';
-          $place    = $item[1] ?? '';
-          $title    = $item[2] ?? 'Без названия';
+          $datetime = explode(" ", $item[0] ?? '') ?? [];
+          $place    = explode(",", $item[1] ?? '') ?? [];
+          $title    = $item[2] ?? '';
           $desc     = $item[3] ?? '';
           $image    = $item[4] ?? '';
           $href     = $item[5] ?? '';
         ?>
-        <?php if ($index === 0): ?>
+<?php if ($index === 0): ?>
         <div class="card mb-4 border-0 shadow-sm overflow-hidden">
           <div class="row g-0">
             <div class="col-md-4">
@@ -71,7 +76,8 @@ $number_authors = 10;
             <div class="col-md-8">
               <div class="card-body">
                 <div class="text-muted small mb-2">
-                  <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?> · <?= parseMarkdownLinks($place) ?>
+                  <i class="bi bi-calendar-event"></i> <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?>
+                  <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0]) ?>
                 </div>
                 <h5 class="card-title fs-4 mb-3"><?= htmlspecialchars($title) ?></h5>
                 <p class="card-text text-muted mb-3"><?= htmlspecialchars($desc) ?></p>
@@ -80,17 +86,17 @@ $number_authors = 10;
             </div>
           </div>
         </div>
-        <?php else: ?>
+<?php else: ?>
         <div class="border-bottom py-3">
           <div class="text-muted small mb-1">
-             <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?> · <?= parseMarkdownLinks($place) ?>
+             <i class="bi bi-calendar-event"></i> <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?>
+             <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0]) ?>
           </div>
           <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
           <p class="text-muted mb-2"><?= htmlspecialchars($desc) ?>… <a href="<?= $href ?>">подробнее <i class="bi bi-arrow-right"></i></a></p>
         </div>
-        <?php endif; ?>
+<?php endif; ?>
 <?php endforeach; ?>
-
       </div>
 
       <!-- Reports -->
@@ -114,7 +120,7 @@ $number_authors = 10;
       </div>
 
       <div class="text-center mt-5">
-        <a href="/reports" class="btn btn-outline-primary">всё прошедшее <i class="bi bi-arrow-right"></i></a>
+        <a href="/reports/" class="btn btn-outline-primary">всё прошедшее <i class="bi bi-arrow-right"></i></a>
       </div>
     </div>
 

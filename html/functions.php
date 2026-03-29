@@ -100,7 +100,7 @@ function parseMarkdown($text) {
     $text = preg_replace_callback('/\[(.*?)\]\((.*?)\)/', function ($matches) {
         $name = $matches[1];
         $url = $matches[2];
-        return '<a href="' . $url . (str_starts_with($url, 'http')? ' target="_blank"' : '') . '">' . $name . '</a>';
+        return '<a href="' . $url . '"' . (str_starts_with($url, 'http')? ' target="_blank"' : '') . '>' . $name . '</a>';
     }, $text);
 
     // italic **text**

@@ -1,5 +1,5 @@
 <?php
-// reports.php version 0.1 by 26-Mar-26
+// reports.php version 0.2 by 29-Mar-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -99,7 +99,7 @@ $title = $report_item
             $title = $report_item[1] ?? 'Без названия';
         ?>
        <div class="card border-0 shadow-sm mb-5">
-          <div class="card-body p-4 p-lg-5">
+          <div class="card-body p-4 p-lg-4">
             <small class="text-muted"><?= formatDateRu($date) ?></small>
             <h1 class="h3 mt-2 mb-3"><?= htmlspecialchars($title) ?></h1>
             <?php if (!empty($report_detail)): ?>
@@ -161,7 +161,8 @@ $title = $report_item
               <a href="<?= htmlspecialchars($href) ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
                 <div>
                   <small class="text-muted">
-                    <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1] ?? '') ?> · <?= htmlspecialchars($place[0] ?? '') ?>
+                    <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1] ?? '') ?>
+                    <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0] ?? '') ?>
                   </small>
                   <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
                 </div>

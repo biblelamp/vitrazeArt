@@ -1,5 +1,5 @@
 <?php
-// authors.php version 0.4 by 26-Mar-26
+// authors.php version 0.5 by 29-Mar-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -173,7 +173,8 @@ $title = ($author_item ? htmlspecialchars($author_item[0] ?? 'Автор') . ' �
           <a href="<?= htmlspecialchars($href) ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
             <div>
               <small class="text-muted">
-                <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?> · <?= htmlspecialchars($place[0]) ?>
+                <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?>
+                <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0]) ?>
               </small>
               <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
             </div>
