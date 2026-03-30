@@ -1,5 +1,5 @@
 <?php
-// functions.php version 0.4 by 28-Mar-26
+// functions.php version 0.5 by 29-Mar-26
 
 // reading blocks of lines from a file (delimiter: empty line)
 function readBlocks($filePath) {
@@ -62,18 +62,6 @@ function formatDateRu($dateStr) {
         return "$day $month $year";
     }
 }
-// parse markdown links in text
-function parseMarkdownLinks($text) {
-    return preg_replace_callback(
-        '/\[(.*?)\]\((.*?)\)/',
-        function ($matches) {
-            $label = htmlspecialchars($matches[1], ENT_QUOTES, 'UTF-8');
-            $url   = htmlspecialchars($matches[2], ENT_QUOTES, 'UTF-8');
-            return '<a href="' . $url . '" target="_blank" class="text-decoration-none">' . $label . '</a>';
-        },
-        $text
-    );
-}
 // parse Markdown
 function parseMarkdown($text) {
     // horizontal separator (---)
@@ -111,6 +99,18 @@ function parseMarkdown($text) {
 
     return $text;
 }
+// clean Markdown
+function cleanMarkdown($text) {
+    $text = preg_replace('/\*\*(.+?)\*\*/', '$1', $text);     // **жирный**
+    $text = preg_replace('/\*(.+?)\*/', '$1', $text);         // *курсив*
+    $text = preg_replace('/__(.+?)__/', '$1', $text);         // __жирный__
+    $text = preg_replace('/_(.+?)_/', '$1', $text);           // _курсив_
+    $text = preg_replace('/`(.+?)`/', '$1', $text);           // `код`
+    $text = preg_replace('/\[(.+?)\]\(.+?\)/', '$1', $text);  // [текст](ссылка)
+    $text = preg_replace('/^#+\s*/m', '', $text);             // заголовки # ## ###
+    $text = preg_replace('/^\s*[-*+]\s+/m', '', $text);       // списки
+    return trim($text);
+}
 // convert Name Lastname -> Name L.
 function shortName(string $fullName): string {
     $fullName = trim($fullName);
@@ -135,5 +135,24 @@ function shortName(string $fullName): string {
     $initial = mb_substr($lastName, 0, 1);
 
     return $firstName . ' ' . $initial . '.';
+}
+// 
+function getPageWordForm($number): string {
+    $number = abs($number) % 100;
+    $lastDigit = $number % 10;
+
+    if ($number >= 11 && $number <= 19) {
+        return 'страниц';
+    }
+
+    if ($lastDigit == 1) {
+        return 'страница';
+    }
+
+    if ($lastDigit >= 2 && $lastDigit <= 4) {
+        return 'страницы';
+    }
+
+    return 'страниц';
 }
 ?>

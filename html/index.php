@@ -1,5 +1,5 @@
 <?php
-// vitrazeArt.cz © 2026 version 0.4.2 by 29-Mar-26
+// vitrazeArt.cz © 2026 version 0.4.3 by 29-Mar-26
 
 require_once __DIR__ . '/functions.php';
 

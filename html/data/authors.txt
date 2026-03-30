@@ -185,3 +185,7 @@ tomazina default-f
 Бронислава Волкова
 vlkova default-f
 поэтесса, переводчица, прозаик
+
+Роман Ижболдин
+izboldin default-m
+режиссёр и сценарист

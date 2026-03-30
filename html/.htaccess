@@ -2,6 +2,7 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
+RewriteRule ^about(/.*)?$ pages.php [L]
 RewriteRule ^search(/.*)?$ search.php [L]
 RewriteRule ^events(/.*)?$ events.php [L]
 RewriteRule ^reports(/.*)?$ reports.php [L]

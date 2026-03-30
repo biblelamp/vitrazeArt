@@ -119,7 +119,7 @@ $title = $event_item
               <div class="card-body">
                 <?php if ($place): ?>
                 <div class="text-muted small mb-2">
-                  <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?>
+                  <i class="bi bi-calendar-event"></i> <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?>
                   · <?= htmlspecialchars(trim($place[0])) ?>
                   <i class="bi bi-geo-alt"></i> <a href="<?= htmlspecialchars(trim($place[2])) ?>" target="_blank">
                     <?= htmlspecialchars(trim($place[1])) ?>

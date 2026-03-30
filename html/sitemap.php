@@ -1,5 +1,5 @@
 <?php
-// sitemap.php version 0.2 by 27-Mar-26
+// sitemap.php version 0.3 by 29-Mar-26
 
 header('Content-Type: application/xml; charset=utf-8');
 
@@ -13,8 +13,10 @@ $url_report_idx = 3;
 // static pages
 $urls = [
     '/',
-    '/reports',
-    '/authors'
+    '/about/',
+    '/events/',
+    '/reports/',
+    '/authors/'
 ];
 
 // add all authors pages

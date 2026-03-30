@@ -1,5 +1,5 @@
 <?php
-// search.php version 0.1 by 27-Mar-26
+// search.php version 0.2 by 29-Mar-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -14,67 +14,255 @@ $number_authors = 10;
 
 // get search request
 $query = isset($_GET['text']) ? trim($_GET['text']) : '';
-
 $results = [];
 
-// search by text
+// ====================== 1. Анонсы (первый приоритет) ======================
 if (!empty($query)) {
-    $searchDir = __DIR__ . '/data/authors';
-    
-    if (is_dir($searchDir)) {
-        $files = glob($searchDir . '/*.txt');
-        
-        foreach ($files as $file) {
-            $content = file_get_contents($file);
-            if ($content === false) continue;
-            
-            $filename = basename($file);
-            $pageTitle = pathinfo($filename, PATHINFO_FILENAME);
-            
-            $lines = explode("\n", $content);
-            
-            foreach ($lines as $line) {
-                $line = trim($line);
-                if (empty($line)) continue;
-                
-                if (stripos($line, $query) !== false) {
-                    // Выделяем найденный текст жирным
-                    $highlighted = preg_replace(
-                        '/(' . preg_quote($query, '/') . ')/iu',
-                        '<strong>$1</strong>',
-                        htmlspecialchars($line)
-                    );
-                    
-                    // Обрезаем сниппет, если он слишком длинный
-                    if (mb_strlen($line) > 180) {
-                        $pos = mb_stripos($line, $query);
-                        $start = max(0, $pos - 60);
-                        $snippet = mb_substr($line, $start, 160);
-                        $snippet = '...' . trim($snippet) . '...';
-                        
-                        // Повторно выделяем после обрезки
+    $events_list = readBlocks('data/events.txt');
+
+    foreach ($events_list as $item) {
+        if (count($item) < 6) continue;
+
+        $title       = trim($item[2] ?? '');
+        $description = trim($item[3] ?? '');
+        $url         = trim($item[5] ?? '');
+
+        if (empty($title) || empty($url)) continue;
+
+        $type = '<i class="bi bi-calendar-event"></i>';
+        $snippet = null;
+
+        // Поиск в подробном файле анонса
+        $slug = substr(ltrim($url, '/'), strlen('events/'));
+        $txt_file = __DIR__ . '/data/events/' . str_replace('/', '-', $slug) . '.txt';
+
+        if (file_exists($txt_file)) {
+            $content = file_get_contents($txt_file);
+            if ($content) {
+                $lines = explode("\n", $content);
+                foreach ($lines as $line) {
+                    $line = trim($line);
+                    if (empty($line)) continue;
+
+                    if (mb_stripos($line, $query) !== false) {
+                        $clean = cleanMarkdown($line);
                         $highlighted = preg_replace(
                             '/(' . preg_quote($query, '/') . ')/iu',
                             '<strong>$1</strong>',
-                            htmlspecialchars($snippet)
+                            htmlspecialchars($clean)
                         );
-                    } else {
-                        $highlighted = preg_replace(
-                            '/(' . preg_quote($query, '/') . ')/iu',
-                            '<strong>$1</strong>',
-                            htmlspecialchars($line)
-                        );
+
+                        if (mb_strlen($clean) > 180) {
+                            $pos = mb_stripos($clean, $query);
+                            $start = max(0, $pos - 60);
+                            $clean = '...' . mb_substr($clean, $start, 160) . '...';
+                            $highlighted = preg_replace(
+                                '/(' . preg_quote($query, '/') . ')/iu',
+                                '<strong>$1</strong>',
+                                htmlspecialchars($clean)
+                            );
+                        }
+                        $snippet = $highlighted;
+                        break;
                     }
-                    
-                    $results[] = [
-                        'title'     => $pageTitle,
-                        'snippet'   => $highlighted,
-                        'url'       => '/authors/' . $pageTitle,
-                        'filename'  => $filename
-                    ];
-                    break; // один результат на файл
                 }
             }
+        }
+
+        // Поиск в описании
+        if ($snippet === null && mb_stripos($description, $query) !== false) {
+            $clean = cleanMarkdown($description);
+            $snippet = preg_replace(
+                '/(' . preg_quote($query, '/') . ')/iu',
+                '<strong>$1</strong>',
+                htmlspecialchars($clean)
+            );
+        }
+
+        // Поиск в заголовке
+        if ($snippet === null && mb_stripos($title, $query) !== false) {
+            $clean = cleanMarkdown($title);
+            $snippet = preg_replace(
+                '/(' . preg_quote($query, '/') . ')/iu',
+                '<strong>$1</strong>',
+                htmlspecialchars($clean)
+            );
+        }
+
+        if ($snippet !== null) {
+            $results[] = [
+                'title'   => $title,
+                'snippet' => $snippet,
+                'url'     => $url,
+                'type'    => $type
+            ];
+        }
+    }
+}
+
+// ====================== 2. Репортажи (второй приоритет) ======================
+if (!empty($query)) {
+    $reports_list = readBlocks('data/reports.txt');
+
+    foreach ($reports_list as $item) {
+        if (count($item) < 4) continue;
+
+        $title       = trim($item[1] ?? '');
+        $description = trim($item[2] ?? '');
+        $url         = trim($item[3] ?? '');
+
+        if (empty($title) || empty($url)) continue;
+
+        $type = '<i class="bi bi-pencil-square"></i>';
+        $snippet = null;
+
+        // Поиск в подробном файле репортажа
+        $slug = substr(ltrim($url, '/'), strlen('reports/'));
+        $txt_file = __DIR__ . '/data/reports/' . str_replace('/', '-', $slug) . '.txt';
+
+        if (file_exists($txt_file)) {
+            $content = file_get_contents($txt_file);
+            if ($content) {
+                $lines = explode("\n", $content);
+                foreach ($lines as $line) {
+                    $line = trim($line);
+                    if (empty($line)) continue;
+
+                    if (mb_stripos($line, $query) !== false) {
+                        $clean = cleanMarkdown($line);
+                        $highlighted = preg_replace(
+                            '/(' . preg_quote($query, '/') . ')/iu',
+                            '<strong>$1</strong>',
+                            htmlspecialchars($clean)
+                        );
+
+                        if (mb_strlen($clean) > 180) {
+                            $pos = mb_stripos($clean, $query);
+                            $start = max(0, $pos - 60);
+                            $clean = '...' . mb_substr($clean, $start, 160) . '...';
+                            $highlighted = preg_replace(
+                                '/(' . preg_quote($query, '/') . ')/iu',
+                                '<strong>$1</strong>',
+                                htmlspecialchars($clean)
+                            );
+                        }
+                        $snippet = $highlighted;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Поиск в описании
+        if ($snippet === null && mb_stripos($description, $query) !== false) {
+            $clean = cleanMarkdown($description);
+            $snippet = preg_replace(
+                '/(' . preg_quote($query, '/') . ')/iu',
+                '<strong>$1</strong>',
+                htmlspecialchars($clean)
+            );
+        }
+
+        // Поиск в заголовке
+        if ($snippet === null && mb_stripos($title, $query) !== false) {
+            $clean = cleanMarkdown($title);
+            $snippet = preg_replace(
+                '/(' . preg_quote($query, '/') . ')/iu',
+                '<strong>$1</strong>',
+                htmlspecialchars($clean)
+            );
+        }
+
+        if ($snippet !== null) {
+            $results[] = [
+                'title'   => $title,
+                'snippet' => $snippet,
+                'url'     => $url,
+                'type'    => $type
+            ];
+        }
+    }
+}
+
+// ====================== 3. Авторы (третий приоритет) ======================
+if (!empty($query)) {
+    $authors_list = readBlocks('data/authors.txt');
+
+    foreach ($authors_list as $item) {
+        $name      = trim($item[0] ?? '');
+        $nick_line = trim($item[1] ?? '');
+        $role      = trim($item[2] ?? '');
+
+        $main_nick = explode(' ', $nick_line)[0] ?? '';
+        if (empty($main_nick) || empty($name)) continue;
+
+        $url  = '/authors/' . $main_nick;
+        $type = '<i class="bi bi-person-circle"></i>';
+        $snippet = null;
+
+        // Поиск в файле автора
+        $txt_file = __DIR__ . '/data/authors/' . $main_nick . '.txt';
+
+        if (file_exists($txt_file)) {
+            $content = file_get_contents($txt_file);
+            if ($content) {
+                $lines = explode("\n", $content);
+                foreach ($lines as $line) {
+                    $line = trim($line);
+                    if (empty($line)) continue;
+
+                    if (mb_stripos($line, $query) !== false) {
+                        $clean = cleanMarkdown($line);
+                        $highlighted = preg_replace(
+                            '/(' . preg_quote($query, '/') . ')/iu',
+                            '<strong>$1</strong>',
+                            htmlspecialchars($clean)
+                        );
+
+                        if (mb_strlen($clean) > 180) {
+                            $pos = mb_stripos($clean, $query);
+                            $start = max(0, $pos - 60);
+                            $clean = '...' . mb_substr($clean, $start, 160) . '...';
+                            $highlighted = preg_replace(
+                                '/(' . preg_quote($query, '/') . ')/iu',
+                                '<strong>$1</strong>',
+                                htmlspecialchars($clean)
+                            );
+                        }
+                        $snippet = $highlighted;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Поиск в роли
+        if ($snippet === null && mb_stripos($role, $query) !== false) {
+            $clean = cleanMarkdown($role);
+            $snippet = preg_replace(
+                '/(' . preg_quote($query, '/') . ')/iu',
+                '<strong>$1</strong>',
+                htmlspecialchars($clean)
+            );
+        }
+
+        // Поиск в имени автора
+        if ($snippet === null && mb_stripos($name, $query) !== false) {
+            $clean = cleanMarkdown($name);
+            $snippet = preg_replace(
+                '/(' . preg_quote($query, '/') . ')/iu',
+                '<strong>$1</strong>',
+                htmlspecialchars($clean)
+            );
+        }
+
+        if ($snippet !== null) {
+            $results[] = [
+                'title'   => $name,
+                'snippet' => $snippet,
+                'url'     => $url,
+                'type'    => $type
+            ];
         }
     }
 }
@@ -122,22 +310,19 @@ $totalResults = count($results);
           </div>
 
         <?php else: ?>
-          <p class="text-muted mb-4">Найдено: <?= $totalResults ?> <?= $totalResults == 1 ? 'результат' : 'результатов' ?></p>
-          
+          <p class="text-muted mb-4">Найдено: <?= $totalResults ?> <?= getPageWordForm($totalResults) ?></p>
+
           <?php foreach ($results as $result): ?>
-            <div class="card mb-4 shadow-sm">
+            <div class="card mb-2 shadow-sm">
               <div class="card-body">
-                <h5 class="card-title mb-3">
-                  <a href="<?= htmlspecialchars($result['url']) ?>" class="text-decoration-none text-primary">
+                <h5 class="card-title mb-1">
+                  <?= $result['type'] ?> <a href="<?= htmlspecialchars($result['url']) ?>" class="text-decoration-none text-primary">
                     <?= htmlspecialchars($result['title']) ?>
                   </a>
                 </h5>
-                <p class="card-text mb-3" style="line-height: 1.5;">
+                <p class="card-text mb-1" style="line-height: 1.5;">
                   <?= $result['snippet'] ?>
                 </p>
-                <a href="<?= htmlspecialchars($result['url']) ?>" class="btn btn-outline-primary btn-sm">
-                  Читать полностью <i class="bi bi-arrow-right"></i>
-                </a>
               </div>
             </div>
           <?php endforeach; ?>
