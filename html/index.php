@@ -1,5 +1,5 @@
 <?php
-// vitrazeArt.cz © 2026 version 0.4.3 by 29-Mar-26
+// vitrazeArt.cz © 2026 version 0.4.4 by 30-Mar-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -31,6 +31,7 @@ $number_authors = 10;
   <link href="/css/style.css" rel="stylesheet"><!-- my styles -->
   <link rel="stylesheet" href="/css/bootstrap-icons.min.css"><!-- v1.13.1 -->
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+  <link rel="alternate" type="application/rss+xml" title="Пражские витражи — RSS" href="https://vitrazeart.cz/feed.xml">
 </head>
 <body class="bg-light">
 

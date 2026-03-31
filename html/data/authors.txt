@@ -31,7 +31,7 @@ fly
 поэтесса и прозаик
 
 Дарья Филиппская
-aria default-f
+arianemo
 поэтесса и актриса
 
 Сергей Ирюпин
@@ -43,11 +43,11 @@ bekreeva
 музыкант и сонграйтер
 
 Максуд Кязимов
-kazimov default-m
+kazimov
 поэт
 
 Анастасия Заячук
-zayachuk default-f
+zayachuk
 журналист
 
 VV - Вова Чинана
@@ -55,7 +55,7 @@ vowa.chinana
 поэт
 
 Александр Грачёв
-gracev default-m
+gracev
 поэт
 
 Наталья Полякова

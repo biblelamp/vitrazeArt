@@ -50,7 +50,7 @@ if ($selected_nick) {
 // image for preview
 $og_image = $author_item ? '/images/authors/' . $author_item[1] . '.jpg' : '/images/logo.jpg';
 // title
-$title = ($author_item ? htmlspecialchars($author_item[0] ?? 'Автор') . ' — ' : '') . 'Авторы — Пражские витражи';
+$title = ($author_item ? htmlspecialchars($author_item[0] ?? 'Автор') . ' – ' : '') . 'Авторы – Пражские витражи';
 ?>
 <!DOCTYPE html>
 <html lang="ru">

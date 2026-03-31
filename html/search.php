@@ -13,7 +13,7 @@ shuffle($authors);
 $number_authors = 10;
 
 // get search request
-$query = isset($_GET['text']) ? trim($_GET['text']) : '';
+$query = isset($_GET['text']) ? htmlspecialchars(trim($_GET['text'])) : '';
 $results = [];
 
 // ====================== 1. Анонсы (первый приоритет) ======================
