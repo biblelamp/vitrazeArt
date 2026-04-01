@@ -178,13 +178,13 @@ violetta.eterova
 stepanova
 data-аналитик
 
+Бронислава Волкова
+vlkova
+поэтесса, переводчица, прозаик
+
 Виктория Климова
 tomazina default-f
 невролог и репортёр
-
-Бронислава Волкова
-vlkova default-f
-поэтесса, переводчица, прозаик
 
 Роман Ижболдин
 izboldin default-m
