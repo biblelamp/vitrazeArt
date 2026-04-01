@@ -22,9 +22,9 @@ $number_authors = 10;
   <meta name="description" content="Сообщество русскоязычных поэтов, художников и музыкантов в Праге и Чехии. Публикации, авторы, творчество и культурная жизнь.">
   <title>Пражские витражи — анонсы, репортажи, авторы</title>
   <!-- Open Graph meta tags -->
-  <meta property="og:title" content="Пражские витражи — анонсы, репортажи, авторы">
+  <meta property="og:title" content="Пражские витражи – анонсы, репортажи, авторы">
   <meta property="og:description" content="Творческое сообщество в Праге и Чехии: поэты, художники, музыканты. Найди своих или опубликуй своё творчество.">
-  <meta property="og:image" content="https://vitrazeart.cz/images/logo.jpg">
+  <meta property="og:image" content="/images/logo.jpg">
   <meta property="og:url" content="https://vitrazeart.cz/">
   <meta property="og:type" content="website">
   <link href="/css/bootstrap.min.css" rel="stylesheet"><!-- v5.3.8 -->

@@ -72,8 +72,8 @@ Pelmeňárna, náměstí Jiřího z Poděbrad 1552/3, https://mapy.com/s/boseral
 Бар Lost And Found, Žitná 1764/11, https://mapy.com/s/gubepafage
 Сто лет с Окуджавой
 Традиционный ежегодный музыкальный вечер в день рождения Булата Шалвовича Окуджавы. Вход свободный
-/images/events/2026-05-09-okudzava.jpg
-/events/2026/05/09/okudzava
+/images/events/2026-05-09-okudzhava.jpg
+/events/2026/05/09/okudzhava
 
 2026-05-16 10:00
 Dům národnostních menšin, Vocelova 602/3, https://mapy.com/s/kuzekakula

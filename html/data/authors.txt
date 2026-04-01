@@ -59,47 +59,47 @@ gracev
 поэт
 
 Наталья Полякова
-poljakova default-f
+poljakova
 поэзия и проза
 
 Маргарита Желинская
-zelinskaja default-f
+zhelinskaya
 архитектор
 
 Андрей Бондаренко
-bondarenko default-m
+bondarenko
 студент
 
 Мария Гапченко
-gapcenko default-f
+gapcenko
 студентка
 
 Леонид Баксинер
-baxiner default-m
+baxiner
 художник
 
 Пётр Банков
-bankov default-m
+bankov
 дизайнер, плакатист
 
 Наташа Брин
-breen default-f
+breen
 художник-керамист и поэт
 
 Елена Готовцева
-gotovtseva default-f
+gotovtseva
 художник
 
 Алексей Губарев
-goubarev default-m
+goubarev
 художник
 
 Елена Добрина
-dobrina default-f
+dobrina
 ит специалист
 
 Анастасия Дубинкина
-dubinkina default-f
+dubinkina
 графический дизайнер
 
 Светлана Дубинкина
@@ -115,27 +115,27 @@ kirsanova
 архитектор и живописец
 
 Владислав Корнешков
-korneskov default-m
+karniashkou
 художник
 
 Виктор Макурин
-makurin default-m
+makurin
 художник
 
 Хейран Мустафа-Заде
-heyranam default-f
+heyranam
 художник
 
 Полина Немировская
-linariel default-f
+linariel
 картины и маски
 
 Наталья Никитина
-nikitina default-f
+nikitina
 сакральная геометрия
 
 Юлия Обухова
-obuhova default-f
+obukhova
 архитектор и живописец
 
 Инна Папшева
@@ -143,11 +143,11 @@ papsheva
 художник
 
 Александра Рымарь
-rymar default-f
+rymar
 студентка
 
 Алина Саакян
-sahakyan default-f
+sahakyan
 художник
 
 Анна Скорко
@@ -155,7 +155,7 @@ skorko
 художник, гид, актриса
 
 Дима Халиков
-halikov default-m
+halikov
 ювелир
 
 Ирина Беспалова
@@ -163,7 +163,7 @@ bespalova
 журналист и писатель
 
 Анна Демьяненко
-damiani default-f
+damiani
 писатель
 
 Сергей Левицкий
@@ -175,7 +175,7 @@ violetta.eterova
 режиссер, писатель, сценарист
 
 Мария Степанова
-stepanova default-f
+stepanova
 data-аналитик
 
 Виктория Климова
