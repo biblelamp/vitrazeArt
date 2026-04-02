@@ -63,11 +63,11 @@ $title = $report_item
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Отчёты и репортажи с мероприятий сообщества Пражские витражи">
+  <meta name="description" content="Отчёты и репортажи с мероприятий сообщества Пражские витражи.">
   <title><?= $title ?></title>
   <!-- Open Graph meta tags -->
   <meta property="og:title" content="<?= $title ?>">
-  <meta property="og:description" content="Отчёты — Пражские витражи">
+  <meta property="og:description" content="Отчёты и репортажи с мероприятий сообщества Пражские витражи.">
   <meta property="og:image" content="/images/logo.jpg">
   <meta property="og:url" content="https://vitrazeart.cz/reports/">
   <meta property="og:type" content="website">

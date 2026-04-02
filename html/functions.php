@@ -1,9 +1,11 @@
 <?php
-// functions.php version 0.5 by 29-Mar-26
+// functions.php version 0.6 by 1-Apr-26
 
 // reading blocks of lines from a file (delimiter: empty line)
 function readBlocks($filePath) {
-    if (!file_exists($filePath)) return [];
+    if (!file_exists($filePath)) 
+        return [];
+
     $content = file_get_contents($filePath);
     $blocks = preg_split('/\n\s*\n/', trim($content), -1, PREG_SPLIT_NO_EMPTY);
     $items = [];
@@ -13,54 +15,117 @@ function readBlocks($filePath) {
     }
     return $items;
 }
-// filter list of announcements to exclude past events
+// filter list of events to exclude past events
+// support formats:
+//   YYYY-MM-DD
+//   YYYY-M-D
+//   YYYY-MM-DD,DD1
+//   YYYY-M-D,D1
 function filterByDate(array $data): array {
     $today = date('Y-m-d');
     $result = [];
+
     foreach ($data as $item) {
-        if (!isset($item[0])) {
-            continue; // skip invalid elements
+        if (empty($item) || !isset($item[0]) || trim($item[0]) === '') {
+            continue;
         }
-        $date = $item[0];
-        // keep only date >= today
-        if ($date >= $today) {
+
+        $effectiveDate = getEffectiveDate($item[0]);
+
+        if ($effectiveDate !== null && $effectiveDate >= $today) {
             $result[] = $item;
         }
     }
     return $result;
 }
-// date conversion YYYY-MM-DD -> d месяц ГОД
+// return last day in format YYYY-MM-DD
+// 2026-04-01,05 → 2026-04-05
+// 2026-04-01    → 2026-04-01
+function getEffectiveDate(string $dateStr): ?string {
+    $dateStr = trim($dateStr);
+    if (empty($dateStr)) {
+        return null;
+    }
+
+    // Убираем время (всё после первого пробела)
+    $datePart = preg_split('/\s+/', $dateStr, 2)[0];
+
+    // Разделяем на основную дату и возможный диапазон дней
+    $parts = array_map('trim', explode(',', $datePart));
+    $mainPart = $parts[0];
+    $endDay   = $parts[1] ?? null;
+
+    // Нормализация даты (поддержка 2026-3-6 и 2026-03-06)
+    if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $mainPart, $m)) {
+        $normalized = sprintf('%04d-%02d-%02d', $m[1], $m[2], $m[3]);
+    } else {
+        return null;
+    }
+
+    $date = DateTime::createFromFormat('Y-m-d', $normalized);
+    if (!$date) {
+        return null;
+    }
+
+    if ($endDay !== null) {
+        $endDay = (int)$endDay;
+        $year   = $date->format('Y');
+        $month  = $date->format('m');
+        return sprintf('%s-%s-%02d', $year, $month, $endDay);
+    }
+
+    return $date->format('Y-m-d');
+}
+// date conversion 
+// Поддерживает:
+//   YYYY-MM-DD     →  1 апреля
+//   YYYY-M-D       →  1 апреля
+//   YYYY-MM-DD,DD1 →  1-5 апреля
+//   YYYY-M-D,D1    →  1-5 апреля
 function formatDateRu($dateStr) {
     $months = [
-        '01' => 'января',
-        '02' => 'февраля',
-        '03' => 'марта',
-        '04' => 'апреля',
-        '05' => 'мая',
-        '06' => 'июня',
-        '07' => 'июля',
-        '08' => 'августа',
-        '09' => 'сентября',
-        '10' => 'октября',
-        '11' => 'ноября',
-        '12' => 'декабря'
+        '01' => 'января',  '02' => 'февраля', '03' => 'марта', '04' => 'апреля',
+        '05' => 'мая',     '06' => 'июня',    '07' => 'июля',  '08' => 'августа',
+        '09' => 'сентября','10'=> 'октября',  '11'=> 'ноября', '12'=> 'декабря'
     ];
 
-    $date = DateTime::createFromFormat('Y-m-d', $dateStr);
+    // Нормализуем строку: убираем лишние пробелы и разделяем по запятой
+    $dateStr = trim($dateStr);
+    $parts = array_map('trim', explode(',', $dateStr));
+    $mainDate = $parts[0];
+    $endDay   = $parts[1] ?? null;
+
+    // Приводим дату к формату с ведущими нулями (Y-m-d)
+    $normalized = preg_replace_callback('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', 
+        function ($m) {
+            return sprintf('%d-%02d-%02d', $m[1], $m[2], $m[3]);
+        }, 
+    $mainDate);
+
+    $date = DateTime::createFromFormat('Y-m-d', $normalized);
     if (!$date) {
-        return null; // or throws
+        return null; // incorrect date
     }
 
-    $day = $date->format('j');
+    $day   = (int)$date->format('j');
     $month = $months[$date->format('m')];
-    $year = $date->format('Y');
+    $year  = $date->format('Y');
     $currentYear = date('Y');
 
-    if ($year == $currentYear) {
-        return "$day $month";
+    // Формируем строку
+    if ($endDay !== null) {
+        $endDay = (int)$endDay;
+        $range = ($day === $endDay) ? $day : $day . '-' . $endDay;
+        $result = $range . ' ' . $month;
     } else {
-        return "$day $month $year";
+        $result = $day . ' ' . $month;
     }
+
+    if ($year != $currentYear) {
+        $result .= ' ' . $year;
+    }
+
+    return $result;
 }
 // parse Markdown
 function parseMarkdown($text) {
