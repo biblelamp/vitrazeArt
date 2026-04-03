@@ -37,8 +37,8 @@ Galerie Lapidárium, Rámová 735/6, https://mapy.com/s/lekucakeju
 Design & Mosaic Art Studio, Kouřimská 2293/30, https://mapy.com/s/gafacomodu
 Открытие студии мозаики
 Камерный вечер, где искусство и вино встречаются за одним столом. Стоимость: 100 Kč (по предварительной записи)
-/images/events/2026-03-29-mozaika.jpg
-/events/2026/03/29/mozaika
+/images/events/2026-03-29-mosaic-studio.jpg
+/events/2026/03/29/mosaic-studio
 
 2026-04-01,6 17:30
 Divadlo Kámen, Nekvasilova 625/2, https://mapy.com/s/gevagorure
