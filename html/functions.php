@@ -1,10 +1,16 @@
 <?php
-// functions.php version 0.6 by 1-Apr-26
+// functions.php version 0.7 by 4-Apr-26
 
-// reading blocks of lines from a file (delimiter: empty line)
-function readBlocks($filePath) {
-    if (!file_exists($filePath)) 
+/**
+ * Reading blocks of lines from a file (delimiter: empty line)
+ *
+ * @param string $filePath
+ * @return array of string
+ */
+function readBlocks($filePath): array {
+    if (!file_exists($filePath)) {
         return [];
+    }
 
     $content = file_get_contents($filePath);
     $blocks = preg_split('/\n\s*\n/', trim($content), -1, PREG_SPLIT_NO_EMPTY);
@@ -13,14 +19,18 @@ function readBlocks($filePath) {
         $lines = array_filter(array_map('trim', explode("\n", $block)));
         $items[] = $lines;
     }
+
     return $items;
 }
-// filter list of events to exclude past events
-// support formats:
-//   YYYY-MM-DD
-//   YYYY-M-D
-//   YYYY-MM-DD,DD1
-//   YYYY-M-D,D1
+/**
+ * Filter the list of events to exclude past events
+ *
+ * support formats:
+ *   YYYY-MM-DD
+ *   YYYY-M-D
+ *   YYYY-MM-DD,DD1
+ *   YYYY-M-D,D1
+ */
 function filterByDate(array $data): array {
     $today = date('Y-m-d');
     $result = [];
@@ -38,9 +48,12 @@ function filterByDate(array $data): array {
     }
     return $result;
 }
-// return last day in format YYYY-MM-DD
-// 2026-04-01,05 → 2026-04-05
-// 2026-04-01    → 2026-04-01
+/**
+ * Return last day from YYYY-MM-DD or YYYY-MM-DD,DD
+ *
+ * 2026-04-01,05 → 2026-04-05
+ * 2026-04-01    → 2026-04-01
+ */
 function getEffectiveDate(string $dateStr): ?string {
     $dateStr = trim($dateStr);
     if (empty($dateStr)) {
@@ -127,6 +140,49 @@ function formatDateRu($dateStr) {
 
     return $result;
 }
+/**
+ * Generate a URL based on the date, section, name, and file extension
+ * 
+ * @param string $date
+ * @param string $section
+ * @param string $name
+ * @param string|null $ext  Расширение (с точкой или без)
+ * @return string
+ */
+function generateUrl(string $date, string $section, string $name, ?string $ext = null): string {
+    // Извлекаем только часть с датой (до запятой или пробела)
+    $datePart = explode(',', $date)[0];
+    $datePart = trim(explode(' ', $datePart)[0]);
+
+    // Разбиваем дату на год, месяц, день
+    $parts = explode('-', $datePart);
+
+    if (count($parts) !== 3) {
+        throw new InvalidArgumentException('Неверный формат даты');
+    }
+
+    $year  = (int)$parts[0];
+    $month = (int)$parts[1];
+    $day   = (int)$parts[2];
+
+    // Форматируем с ведущими нулями
+    $monthStr = str_pad($month, 2, '0', STR_PAD_LEFT);
+    $dayStr   = str_pad($day, 2, '0', STR_PAD_LEFT);
+
+    // Формируем путь
+    $url = "/{$section}/{$year}/{$monthStr}/{$dayStr}/{$name}";
+
+    // Добавляем расширение, если оно указано
+    if ($ext !== null && $ext !== '') {
+        // Если расширение передано без точки — добавляем её
+        if (!str_starts_with($ext, '.')) {
+            $ext = '.' . $ext;
+        }
+        $url .= $ext;
+    }
+
+    return $url;
+}
 // parse Markdown
 function parseMarkdown($text) {
     // horizontal separator (---)
@@ -201,7 +257,7 @@ function shortName(string $fullName): string {
 
     return $firstName . ' ' . $initial . '.';
 }
-// 
+// get word in correct form
 function getPageWordForm($number): string {
     $number = abs($number) % 100;
     $lastDigit = $number % 10;

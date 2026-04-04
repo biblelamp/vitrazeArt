@@ -1,5 +1,5 @@
 <?php
-// authors.php version 0.5 by 29-Mar-26
+// authors.php version 0.6 by 4-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -19,6 +19,7 @@ if (count($parts) === 2 && $parts[0] === 'authors' && !empty($parts[1])) {
 } elseif (count($parts) === 1 && str_starts_with($parts[0], '@')) {
     $selected_nick = strtolower(substr($parts[0], 1));
 }
+
 // find selected author
 if ($selected_nick) {
     foreach ($authors as $key => $item) {
@@ -30,10 +31,12 @@ if ($selected_nick) {
         }
     }
 }
+
 // 404 page
 if ($author_item == null && $selected_nick != null) {
     $author_item = ['ошибочка 404', $selected_nick . ' unknown', 'вы кого тут ищете? нету такого…'];
 }
+
 // read /data/authors/<selected_nick>.txt
 $author_detail = [];
 if ($selected_nick) {
@@ -42,26 +45,34 @@ if ($selected_nick) {
         $author_detail = readBlocks($detail_path);
     }
 }
+
 // shuffle the list of authors
 shuffle($authors);
 if ($selected_nick) {
     $authors = array_slice($authors, 0, 4);
 }
+
 // image for preview
 $og_image = $author_item ? '/images/authors/' . $author_item[1] . '.jpg' : '/images/logo.jpg';
-// title
-$title = ($author_item ? htmlspecialchars($author_item[0] ?? 'Автор') . ' – ' : '') . 'Авторы – Пражские витражи';
+
+// title & description
+$title = 'Авторы – Пражские витражи';
+$description = 'Русскоязычные поэты, художники, музыканты и другие творческие люди, живущие в Праге и по всей Чехии.';
+if ($author_item) {
+    $title = htmlspecialchars($author_item[0]) . ' – ' . $title;
+    $description = empty($author_detail) ? htmlspecialchars($author_item[2]) . ' – ' . $description : htmlspecialchars($author_detail[0][0]);
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Русскоязычные поэты, художники, музыканты и другие творческие люди, живущие в Праге и по всей Чехии">
+  <meta name="description" content="<?= $description ?>">
   <title><?= $title ?></title>
   <!-- Open Graph meta tags -->
   <meta property="og:title" content="<?= $title ?>">
-  <meta property="og:description" content="Русскоязычные поэты, художники, музыканты и другие творческие люди, живущие в Праге и по всей Чехии">
+  <meta property="og:description" content="<?= $description ?>">
   <meta property="og:image" content="<?= $og_image ?>">
   <meta property="og:url" content="https://vitrazeart.cz/">
   <meta property="og:type" content="website">

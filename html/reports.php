@@ -1,5 +1,5 @@
 <?php
-// reports.php version 0.2 by 29-Mar-26
+// reports.php version 0.3 by 4-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -25,7 +25,7 @@ if (count($parts) >= 5 && $parts[0] === 'reports') {
         
         // Находим выбранный отчёт в списке
         foreach ($reports as $key => $item) {
-            if ('/' . $uri === $item[3]) {
+            if ($code === $item[3]) {
                 $report_item = $item;
                 unset($reports[$key]); // убираем из списка остальных
                 break;
@@ -45,7 +45,7 @@ if ($selected_slug && !$report_item) {
     ];
 }
 
-// Читаем подробный текст отчёта из отдельного файла
+// read report_detail from a file
 $report_detail = [];
 if ($selected_slug) {
     $detail_path = "data/reports/{$selected_slug}.txt";
@@ -54,20 +54,24 @@ if ($selected_slug) {
     }
 }
 
-$title = $report_item 
-    ? htmlspecialchars($report_item[1] ?? 'Отчёт') . ' — Пражские витражи' 
-    : 'Отчёты — Пражские витражи';
+// title & description
+$title = 'Отчёты – Пражские витражи';
+$description = 'Отчёты и репортажи с мероприятий сообщества Пражские витражи.';
+if ($report_item) {
+    $title = htmlspecialchars($report_item[1]) . ' – ' . $title;
+    $description = htmlspecialchars($report_item[2]);
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Отчёты и репортажи с мероприятий сообщества Пражские витражи.">
+  <meta name="description" content="<?= $description ?>">
   <title><?= $title ?></title>
   <!-- Open Graph meta tags -->
   <meta property="og:title" content="<?= $title ?>">
-  <meta property="og:description" content="Отчёты и репортажи с мероприятий сообщества Пражские витражи.">
+  <meta property="og:description" content="<?= $description ?>">
   <meta property="og:image" content="/images/logo.jpg">
   <meta property="og:url" content="https://vitrazeart.cz/reports/">
   <meta property="og:type" content="website">
@@ -126,7 +130,8 @@ $title = $report_item
               $date   = $item[0] ?? '';
               $title  = $item[1] ?? 'Без названия';
               $desc   = $item[2] ?? '';
-              $href   = $item[3] ?? '#';
+              $name   = $item[3] ?? '';
+              $href = generateUrl($date, 'reports', $name)
           ?>
             <a href="<?= htmlspecialchars($href) ?>" class="list-group-item list-group-item-action px-4 py-3">
               <div class="d-flex w-100 justify-content-between">

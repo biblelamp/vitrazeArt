@@ -1,5 +1,5 @@
 <?php
-// vitrazeArt.cz © 2026 version 0.4.5 by 1-Apr-26
+// vitrazeArt.cz © 2026 version 0.4.6 by 4-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -108,7 +108,8 @@ $number_authors = 10;
           $date   = $item[0] ?? '';
           $title  = $item[1] ?? '';
           $desc   = $item[2] ?? '';
-          $href   = $item[3] ?? '';
+          $name   = $item[3] ?? '';
+          $href = generateUrl($date, 'reports', $name)
         ?>
         <a href="<?= $href ?>" class="list-group-item list-group-item-action px-4 py-3">
           <div class="d-flex w-100 justify-content-between">

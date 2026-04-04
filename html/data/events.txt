@@ -2,8 +2,8 @@
 Galerie Beseder, Lihovarská 1060/12, https://mapy.com/s/pokonugoda
 Открытие выставки «Гельман – еврей»
 В рамках фестиваля Дни Израиля 2026 в Праге Марат Гельман представит свои работы. Вход свободный
-/images/events/2026-03-06-gelman.jpg
-/events/2026/03/06/gelman
+/images/events/2026-03-06-marat-gelman.jpg
+/events/2026/03/06/marat-gelman
 
 2026-03-08 18:00
 Dům národnostních menšin, Vocelova 602/3, https://mapy.com/s/kuzekakula
@@ -46,6 +46,13 @@ Divadlo Kámen, Nekvasilova 625/2, https://mapy.com/s/gevagorure
 Театр Треск! проводит в Праге первый межславянский фестиваль театра Jedna Scena, на русском, украинском, чешском, английском и словацком языках
 /images/events/2026-04-01-jedna-scena.jpg
 /events/2026/04/01/jedna-scena
+
+2026-04-09 18:00
+Polibek kafe art bar, Kafkova 580/26, https://mapy.com/s/fahudolese
+Художественная выставка Geometrie Klidu
+Пражская художница Елена Готовцева приглашает на вернисаж своей выставки, картины и постеры можно приобрести. Вход свободный
+/images/events/2026-04-09-geometrie-klidu.jpg
+/events/2026/04/09/geometrie-klidu
 
 2026-04-10 17:00
 Galerie Konvent, Vrchlického 170/3 (Mikulov), https://mapy.com/s/mubagevote
