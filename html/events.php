@@ -29,14 +29,14 @@ if (count($parts) >= 5 && $parts[0] === 'events') {
 
         // seek event by href
         foreach ($all_events as $key => $item) {
-            if ('/' . $uri === $item[5]) {
+            if ($code === $item[4]) {
                 $event_item = $item;
                 break;
             }
         }
         // remove found item
         foreach ($events as $key => $item) {
-            if ('/' . $uri === $item[5]) {
+            if ($code === $item[4]) {
                 unset($events[$key]); // remove found item
                 break;
             }
@@ -63,20 +63,24 @@ if ($selected_slug) {
     }
 }
 
-$title = $event_item 
-    ? htmlspecialchars($event_item[2] ?? 'Анонс') . ' — Пражские витражи' 
-    : 'Пражские витражи — анонсы, репортажи, авторы';
+// title & description
+$title = 'Анонсы – Пражские витражи';
+$description = 'Анонсы творческих мероприятий сообщества Пражские витражи.';
+if ($event_item) {
+    $title = htmlspecialchars($event_item[2]) . ' – ' . $title;
+    $description = htmlspecialchars($event_item[3]);
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Сообщество русскоязычных поэтов, художников и музыкантов в Праге и Чехии. Публикации, авторы, творчество и культурная жизнь.">
+  <meta name="description" content="<?= $description ?>">
   <title><?= $title ?></title>
   <!-- Open Graph meta tags -->
   <meta property="og:title" content="<?= $title ?>">
-  <meta property="og:description" content="Творческое сообщество в Праге и Чехии: поэты, художники, музыканты. Найди своих или опубликуй своё творчество.">
+  <meta property="og:description" content="<?= $description ?>">
   <meta property="og:image" content="/images/logo.jpg">
   <meta property="og:url" content="https://vitrazeart.cz/">
   <meta property="og:type" content="website">
@@ -105,8 +109,9 @@ $title = $event_item
           $place     = explode(",", $event_item[1] ?? '') ?? [];
           $title     = $event_item[2] ?? 'Без названия';
           $desc      = $event_item[3] ?? '';
-          $image     = $event_item[4] ?? '';
-          $href      = $first_item[5] ?? '';
+          $name      = $event_item[4] ?? '';
+          $image     = generateUrl($date_time[0], 'images/events', $name, 'jpg');
+          $href      = generateUrl($date_time[0], 'events', $name);
         ?>
         <div class="card mb-4 border-0 shadow-sm overflow-hidden">
           <div class="row g-0">
@@ -149,8 +154,9 @@ $title = $event_item
           $place     = explode(",", $first_item[1] ?? '') ?? [];
           $title     = $first_item[2] ?? 'Без названия';
           $desc      = $first_item[3] ?? '';
-          $image     = $first_item[4] ?? '';
-          $href      = $first_item[5] ?? '';
+          $name      = $first_item[4] ?? '';
+          $image     = generateUrl($date_time[0], 'images/events', $name, 'jpg');
+          $href      = generateUrl($date_time[0], 'events', $name);
         ?>
         <div class="card mb-4 border-0 shadow-sm overflow-hidden">
           <div class="row g-0">
@@ -179,8 +185,9 @@ $title = $event_item
           $place     = explode(",", $item[1] ?? '') ?? [];
           $title     = $item[2] ?? 'Без названия';
           $desc      = $item[3] ?? '';
-          $image     = $item[4] ?? '';
-          $href      = $item[5] ?? '';
+          $name      = $item[4] ?? '';
+          $image     = generateUrl($date_time[0], 'images/events', $name, 'jpg');
+          $href      = generateUrl($date_time[0], 'events', $name);
         ?>
         <div class="border-bottom py-3">
           <div class="text-muted small mb-1">

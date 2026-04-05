@@ -1,5 +1,5 @@
 <?php
-// functions.php version 0.7 by 4-Apr-26
+// functions.php version 0.8 by 5-Apr-26
 
 /**
  * Reading blocks of lines from a file (delimiter: empty line)
@@ -178,7 +178,7 @@ function generateUrl(string $date, string $section, string $name, ?string $ext =
         if (!str_starts_with($ext, '.')) {
             $ext = '.' . $ext;
         }
-        $url .= $ext;
+        $url = "/{$section}/{$year}-{$monthStr}-{$dayStr}-{$name}" . $ext;
     }
 
     return $url;

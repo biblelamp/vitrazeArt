@@ -2,89 +2,76 @@
 Galerie Beseder, Lihovarská 1060/12, https://mapy.com/s/pokonugoda
 Открытие выставки «Гельман – еврей»
 В рамках фестиваля Дни Израиля 2026 в Праге Марат Гельман представит свои работы. Вход свободный
-/images/events/2026-03-06-marat-gelman.jpg
-/events/2026/03/06/marat-gelman
+marat-gelman
 
 2026-03-08 18:00
 Dům národnostních menšin, Vocelova 602/3, https://mapy.com/s/kuzekakula
 Открытие выставки «Женщина и кошка»
 Пять пражских художниц представят свои работы на выставке картин. Вход свободный
-/images/events/2026-03-08-woman-and-cat.jpg
-/events/2026/03/08/woman-and-cat
+woman-and-cat
 
 2026-03-24 19:00
 Café bar Kolíbka, Řeznická 1891/10, https://mapy.com/s/cojufulego
 Tворческий вечер Dark Romantic Club
 Вечер пройдёт в традиционном интерактивном формате с обсуждением творчества. Вход: free donation (от 100 крон)
-/images/events/2026-03-24-drc.jpg
-/events/2026/03/24/drc
+dark-romantic-club
 
 2026-03-26 19:00
 Galerie Lapidárium, Rámová 735/6, https://mapy.com/s/lekucakeju
 Концерт еврейской музыки
 Известный скрипач Александр Шонерт выступит в сопровождении пианистки Наталии Шонерт. Вход: free donation (от 200 крон)
-/images/events/2026-03-26-shonert.jpg
-/events/2026/03/26/shonert
+alexander-shonert
 
 2026-03-29 18:00
 Бар Lost And Found, Žitná 1764/11, https://mapy.com/s/gubepafage
 Фотовыставка Анны Скорко и Антона Сергиенко
 Фотографии, позволяющие поймать момент, уходящий навсегда. Поэзия и музыка, дружеское общение. Вход свободный
-/images/events/2026-03-29-fokus-zivota.jpg
-/events/2026/03/29/fokus-zivota
+fokus-zivota
 
 2026-03-29 15:00
 Design & Mosaic Art Studio, Kouřimská 2293/30, https://mapy.com/s/gafacomodu
 Открытие студии мозаики
 Камерный вечер, где искусство и вино встречаются за одним столом. Стоимость: 100 Kč (по предварительной записи)
-/images/events/2026-03-29-mosaic-studio.jpg
-/events/2026/03/29/mosaic-studio
+mosaic-studio
 
 2026-04-01,6 17:30
 Divadlo Kámen, Nekvasilova 625/2, https://mapy.com/s/gevagorure
 Межславянский фестиваль театра
 Театр Треск! проводит в Праге первый межславянский фестиваль театра Jedna Scena, на русском, украинском, чешском, английском и словацком языках
-/images/events/2026-04-01-jedna-scena.jpg
-/events/2026/04/01/jedna-scena
+jedna-scena
 
 2026-04-09 18:00
 Polibek kafe art bar, Kafkova 580/26, https://mapy.com/s/fahudolese
 Художественная выставка Geometrie Klidu
 Пражская художница Елена Готовцева приглашает на вернисаж своей выставки, картины и постеры можно приобрести. Вход свободный
-/images/events/2026-04-09-geometrie-klidu.jpg
-/events/2026/04/09/geometrie-klidu
+geometrie-klidu
 
 2026-04-10 17:00
 Galerie Konvent, Vrchlického 170/3 (Mikulov), https://mapy.com/s/mubagevote
 Художественная выставка Křehké napětí
 Анна Кирсанова представит работы, демонстрирующие развитие её художественного языка за последние три года. Вход свободный
-/images/events/2026-04-10-krehke-napeti.jpg
-/events/2026/04/10/krehke-napeti
+krehke-napeti
 
 2026-04-11 17:30
 Бар Lost And Found, Žitná 1764/11, https://mapy.com/s/gubepafage
 Творческий вечер Брониславы Волковой
 Встреча с поэтессой, эссеисткой и переводчицей Брониславой Волковой. Стихи в авторском исполнении. Вход свободный
-/images/events/2026-04-11-volkova.jpg
-/events/2026/04/11/volkova
+bronislava-volkova
 
 2026-04-18 18:00
 Pelmeňárna, náměstí Jiřího z Poděbrad 1552/3, https://mapy.com/s/boseraluke
 Вечер юмора «Смехотерапия»
 Пражский писатель-сатирик Сергей Левицкий приглашает друзей на свой творческий вечер. Вход свободный
-/images/events/2026-04-18-levitski.jpg
-/events/2026/04/18/levitski
+sergey-levitskiy
 
 2026-05-09 17:30
 Бар Lost And Found, Žitná 1764/11, https://mapy.com/s/gubepafage
 Сто лет с Окуджавой
 Традиционный ежегодный музыкальный вечер в день рождения Булата Шалвовича Окуджавы. Вход свободный
-/images/events/2026-05-09-okudzhava.jpg
-/events/2026/05/09/okudzhava
+bulat-okudzhava
 
 2026-05-16,17 10:00
 Dům národnostních menšin, Vocelova 602/3, https://mapy.com/s/kuzekakula
 Поэтический фестиваль «Эмигрантская лира»
 Aссоциация «Эмигрантская лира» (Александр Мельник, Бельгия) проводит Международный поэтический фестиваль в Праге
-/images/events/2026-05-16-festival.jpg
-/events/2026/05/16/festival
+festival-emigrantska-lyra

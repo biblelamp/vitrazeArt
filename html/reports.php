@@ -1,5 +1,5 @@
 <?php
-// reports.php version 0.3 by 4-Apr-26
+// reports.php version 0.4 by 5-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -127,18 +127,18 @@ if ($report_item) {
 
         <div class="list-group list-group-flush border rounded shadow-sm">
           <?php foreach ($reports as $item): 
-              $date   = $item[0] ?? '';
-              $title  = $item[1] ?? 'Без названия';
-              $desc   = $item[2] ?? '';
-              $name   = $item[3] ?? '';
-              $href = generateUrl($date, 'reports', $name)
+              $date        = $item[0] ?? '';
+              $title       = $item[1] ?? 'Без названия';
+              $description = $item[2] ?? '';
+              $name        = $item[3] ?? '';
+              $href        = generateUrl($date, 'reports', $name)
           ?>
             <a href="<?= htmlspecialchars($href) ?>" class="list-group-item list-group-item-action px-4 py-3">
               <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
                 <small class="text-muted"><?= formatDateRu($date) ?></small>
               </div>
-              <p class="mb-1 text-muted small"><?= htmlspecialchars($desc) ?></p>
+              <p class="mb-1 text-muted small"><?= htmlspecialchars($description) ?></p>
             </a>
           <?php endforeach; ?>
         </div>
@@ -157,11 +157,12 @@ if ($report_item) {
           <h2 class="h3 mb-4 pb-2 border-bottom">анонсы</h2>
           <div class="list-group list-group-flush border rounded shadow-sm">
             <?php foreach ($events as $item):
-                $date_time = explode(" ", $item[0] ?? '') ?? [];
-                $place     = explode(",", $item[1] ?? '') ?? [];
-                $title     = $item[2] ?? '';
-                $desc      = $item[3] ?? '';
-                $href      = $item[5] ?? '#';
+                $date_time   = explode(" ", $item[0] ?? '') ?? [];
+                $place       = explode(",", $item[1] ?? '') ?? [];
+                $title       = $item[2] ?? '';
+                $description = $item[3] ?? '';
+                $name        = $item[4] ?? '';
+                $href        = generateUrl($date_time[0], 'events', $name)
             ?>
               <a href="<?= htmlspecialchars($href) ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
                 <div>
