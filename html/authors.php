@@ -1,5 +1,5 @@
 <?php
-// authors.php version 0.6 by 4-Apr-26
+// authors.php version 0.7 by 5-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -175,16 +175,17 @@ if ($author_item) {
         <h2 class="h3 mb-4 pb-2 border-bottom">анонсы</h2>
         <div class="list-group list-group-flush border rounded shadow-sm">
 <?php foreach ($events as $item):
-            $datetime = explode(" ", $item[0] ?? '') ?? [];
-            $place    = explode(",", $item[1] ?? '') ?? [];
-            $title    = $item[2] ?? '';
-            $desc     = $item[3] ?? '';
-            $href     = $item[5] ?? '#';
+            $date_time   = explode(" ", $item[0] ?? '') ?? [];
+            $place       = explode(",", $item[1] ?? '') ?? [];
+            $title       = $item[2] ?? '';
+            $description = $item[3] ?? '';
+            $name        = $item[4] ?? '';
+            $href        = generateUrl($date_time[0], 'events', $name)
           ?>
           <a href="<?= htmlspecialchars($href) ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
             <div>
               <small class="text-muted">
-                <?= formatDateRu($datetime[0]) ?> · <?= htmlspecialchars($datetime[1]) ?>
+                <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?>
                 <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0]) ?>
               </small>
               <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
