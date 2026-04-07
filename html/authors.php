@@ -1,5 +1,5 @@
 <?php
-// authors.php version 0.7 by 5-Apr-26
+// authors.php version 0.8 by 6-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -120,16 +120,20 @@ if ($author_item) {
             <div class="col-md-8">
               <h1 class="h3 fw-bold mb-2"><?= htmlspecialchars($name) ?></h1>
               <p class="lead text-muted mb-3"><?= htmlspecialchars($role) ?></p>
-              <p class="text-muted mb-4">@<?= htmlspecialchars(rawurldecode($nickname[0])) ?></p>
+              <p class="text-muted mb-4">@<?= htmlspecialchars(rawurldecode($nickname[0])) ?>
+<?php if (is_dir('data/gallery/' . $nickname[0])): ?>
+              <i class="bi bi-collection"></i> <a href="/gallery/<?= $nickname[0] ?>">галерея работ</a>
+<?php endif; ?>
+              </p>
             </div>
           </div>
 <?php if (!empty($author_detail)): ?>
-            <hr class="my-4">
-            <div class="mt-4">
+          <hr class="my-4">
+          <div class="mt-4">
 <?php foreach ($author_detail as $block): ?>
-                <p class="mb-3"><?= nl2br(parseMarkdown(implode("\n", $block))) ?></p>
+              <p class="mb-3"><?= nl2br(parseMarkdown(implode("\n", $block))) ?></p>
 <?php endforeach; ?>
-            </div>
+          </div>
 <?php endif; ?>
         </div>
       </div>

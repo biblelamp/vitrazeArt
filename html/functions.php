@@ -1,5 +1,5 @@
 <?php
-// functions.php version 0.8 by 5-Apr-26
+// functions.php version 0.9 by 6-Apr-26
 
 /**
  * Reading blocks of lines from a file (delimiter: empty line)
@@ -89,35 +89,78 @@ function getEffectiveDate(string $dateStr): ?string {
 
     return $date->format('Y-m-d');
 }
-// date conversion 
-// Поддерживает:
-//   YYYY-MM-DD     →  1 апреля
-//   YYYY-M-D       →  1 апреля
-//   YYYY-MM-DD,DD1 →  1-5 апреля
-//   YYYY-M-D,D1    →  1-5 апреля
-function formatDateRu($dateStr) {
+/**
+ * Formats a date or date range into Russian readable format.
+ *
+ * Supported input formats:
+ * - YYYY-MM-DD          → "1 апреля"
+ * - YYYY-M-D            → "1 апреля"
+ * - YYYY-MM-DD,DD2      → "1-5 апреля"
+ * - YYYY-M-D,D2         → "1-5 апреля"
+ * - YYYY-MM             → "Апрель 2025" (month name capitalized)
+ * - YYYY                → "2025"
+ *
+ * If the year is the current year, it is omitted.
+ *
+ * @param string $dateStr Input date string
+ * @return string|null Formatted date or null on invalid input
+ */
+function formatDateRu(string $dateStr): ?string {
     $months = [
-        '01' => 'января',  '02' => 'февраля', '03' => 'марта', '04' => 'апреля',
-        '05' => 'мая',     '06' => 'июня',    '07' => 'июля',  '08' => 'августа',
-        '09' => 'сентября','10'=> 'октября',  '11'=> 'ноября', '12'=> 'декабря'
+        '01' => 'января', '02' => 'февраля', '03' => 'марта', '04' => 'апреля',
+        '05' => 'мая',   '06' => 'июня',    '07' => 'июля',  '08' => 'августа',
+        '09' => 'сентября', '10' => 'октября', '11' => 'ноября', '12' => 'декабря'
     ];
 
-    // Нормализуем строку: убираем лишние пробелы и разделяем по запятой
-    $dateStr = trim($dateStr);
-    $parts = array_map('trim', explode(',', $dateStr));
-    $mainDate = $parts[0];
-    $endDay   = $parts[1] ?? null;
+    $monthsCapitalized = [
+        '01' => 'Январь', '02' => 'Февраль', '03' => 'Март',     '04' => 'Апрель',
+        '05' => 'Май',    '06' => 'Июнь',    '07' => 'Июль',    '08' => 'Август',
+        '09' => 'Сентябрь', '10' => 'Октябрь', '11' => 'Ноябрь', '12' => 'Декабрь'
+    ];
 
-    // Приводим дату к формату с ведущими нулями (Y-m-d)
+    $dateStr = trim($dateStr);
+    if (empty($dateStr)) {
+        return null;
+    }
+
+    // Split by comma for range support (e.g. "2025-04-01,05")
+    $parts = array_map('trim', explode(',', $dateStr, 2));
+    $mainDate = $parts[0];
+    $endDay = $parts[1] ?? null;
+
+    // Determine input format
+    if (preg_match('/^\d{4}$/', $mainDate)) {
+        // YYYY only
+        return $mainDate;
+    }
+
+    if (preg_match('/^\d{4}-\d{1,2}$/', $mainDate)) {
+        // YYYY-MM only
+        [$year, $month] = explode('-', $mainDate);
+        $month = str_pad($month, 2, '0', STR_PAD_LEFT);
+        
+        if (!isset($monthsCapitalized[$month])) {
+            return null;
+        }
+
+        $result = $monthsCapitalized[$month] . ' ' . $year;
+        return $result;
+    }
+
+    // Full date: YYYY-MM-DD or YYYY-M-D
+    if (!preg_match('/^\d{4}-\d{1,2}-\d{1,2}$/', $mainDate)) {
+        return null; // invalid format
+    }
+
+    // Normalize to Y-m-d with leading zeros
     $normalized = preg_replace_callback('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', 
-        function ($m) {
-            return sprintf('%d-%02d-%02d', $m[1], $m[2], $m[3]);
-        }, 
-    $mainDate);
+        fn($m) => sprintf('%d-%02d-%02d', $m[1], $m[2], $m[3]), 
+        $mainDate
+    );
 
     $date = DateTime::createFromFormat('Y-m-d', $normalized);
     if (!$date) {
-        return null; // incorrect date
+        return null;
     }
 
     $day   = (int)$date->format('j');
@@ -125,17 +168,17 @@ function formatDateRu($dateStr) {
     $year  = $date->format('Y');
     $currentYear = date('Y');
 
-    // Формируем строку
+    // Build result
     if ($endDay !== null) {
         $endDay = (int)$endDay;
-        $range = ($day === $endDay) ? $day : $day . '-' . $endDay;
-        $result = $range . ' ' . $month;
+        $range = ($day === $endDay) ? $day : "$day-$endDay";
+        $result = "$range $month";
     } else {
-        $result = $day . ' ' . $month;
+        $result = "$day $month";
     }
 
     if ($year != $currentYear) {
-        $result .= ' ' . $year;
+        $result .= " $year";
     }
 
     return $result;
@@ -200,7 +243,7 @@ function parseMarkdown($text) {
             // рекурсивно парсим markdown внутри цитаты (чтобы работали жирный, курсив, ссылки и т.д.)
             $quote = parseMarkdown($quote);   // внимание: рекурсия!
 
-            return '<figure class="my-3"><blockquote class="border-0 bg-light p-3 rounded-3">' . $quote . '</blockquote></figure>';
+            return '<figure class="my-3"><blockquote class="bg-light p-3 border-start rounded-3 border-4">' . $quote . '</blockquote></figure>';
         },
         $text
     );

@@ -1,5 +1,5 @@
 <?php
-// search.php version 0.2 by 29-Mar-26
+// search.php version 0.3 by 06-Mar-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -21,11 +21,13 @@ if (!empty($query)) {
     $events_list = readBlocks('data/events.txt');
 
     foreach ($events_list as $item) {
-        if (count($item) < 6) continue;
+        if (count($item) < 5) continue;
 
+        $date_time   = explode(" ", $item[0] ?? '') ?? [];
         $title       = trim($item[2] ?? '');
         $description = trim($item[3] ?? '');
-        $url         = trim($item[5] ?? '');
+        $name        = trim($item[4] ?? '');
+        $url         = generateUrl($date_time[0], 'events', $name);
 
         if (empty($title) || empty($url)) continue;
 
@@ -107,9 +109,11 @@ if (!empty($query)) {
     foreach ($reports_list as $item) {
         if (count($item) < 4) continue;
 
+        $date        = trim($item[0] ?? '');
         $title       = trim($item[1] ?? '');
         $description = trim($item[2] ?? '');
-        $url         = trim($item[3] ?? '');
+        $name        = trim($item[3] ?? '');
+        $url         = generateUrl($date, 'reports', $name)
 
         if (empty($title) || empty($url)) continue;
 
