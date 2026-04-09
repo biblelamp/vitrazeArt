@@ -1,5 +1,5 @@
 <?php
-// pages.cz © 2026 version 0.1 by 29-Mar-26
+// pages.cz © 2026 version 0.2 by 8-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -7,14 +7,18 @@ require_once __DIR__ . '/functions.php';
 $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 $parts = explode('/', $uri);
 
-$title = null;
+$signature = null;
+$title_page = null;
+$description_page = null;
 $content = null;
 
 if (count($parts) > 0) {
     $detail_path = "data/{$parts[0]}.txt";
     if (file_exists($detail_path)) {
         $content = readBlocks($detail_path);
-        $title = $content[0][0];
+        $signature = explode("|", $content[0][0] ?? '') ?? [];
+        $title_page = $signature[0];
+        $description_page = $signature[1];
         unset($content[0]);
     }
 }
@@ -27,17 +31,25 @@ shuffle($authors);
 
 // number of authors on the page
 $number_authors = 10;
+
+// title & description
+$title = 'Страницы — Пражские витражи';
+$description = 'Пражские витражи – все цвета творчества.';
+if ($signature) {
+    $title = $title_page . ' – ' . $title;
+    $description = $description_page . ' – ' . $description;
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Сообщество русскоязычных поэтов, художников и музыкантов в Праге и Чехии. Публикации, авторы, творчество и культурная жизнь.">
-  <title>Пражские витражи — анонсы, репортажи, авторы</title>
+  <meta name="description" content="<?= $description ?>">
+  <title><?= $title ?></title>
   <!-- Open Graph meta tags -->
-  <meta property="og:title" content="Пражские витражи — анонсы, репортажи, авторы">
-  <meta property="og:description" content="Творческое сообщество в Праге и Чехии: поэты, художники, музыканты. Найди своих или опубликуй своё творчество.">
+  <meta property="og:title_page" content="<?= $title ?>">
+  <meta property="og:description" content="<?= $description ?>">
   <meta property="og:image" content="https://vitrazeart.cz/images/logo.jpg">
   <meta property="og:url" content="https://vitrazeart.cz/">
   <meta property="og:type" content="website">
@@ -56,7 +68,7 @@ $number_authors = 10;
     <!-- Left column – page -->
     <div class="col-lg-8">
       <!-- About Us -->
-      <h2 class="h3 mb-4 pb-2 border-bottom"><?= $title ?></h2>
+      <h2 class="h3 mb-4 pb-2 border-bottom"><?= mb_strtolower($title_page) ?></h2>
       <div class="mb-4">
         <div class="card mb-4 border-0 shadow-sm overflow-hidden">
           <div class="card-body">
