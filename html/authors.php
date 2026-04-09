@@ -1,5 +1,5 @@
 <?php
-// authors.php version 0.8 by 6-Apr-26
+// authors.php version 0.9 by 9-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -156,7 +156,7 @@ if ($author_item) {
           <a href="<?= htmlspecialchars($href) ?>" class="text-decoration-none">
             <div class="card h-100 border-0 shadow-sm author-card">
               <div class="card-body text-center p-4">
-                <img src="<?= htmlspecialchars($image) ?>" class="person-img mb-3" alt="<?= htmlspecialchars($name) ?>">
+                <img src="<?= getThumbnail($image) ?>" class="person-img mb-3" loading="lazy" decoding="async" alt="<?= htmlspecialchars($name) ?>">
                 <h5 class="card-title mb-1"><?= htmlspecialchars($name) ?></h5>
                 <p class="card-text text-muted small"><?= htmlspecialchars($role) ?></p>
               </div>

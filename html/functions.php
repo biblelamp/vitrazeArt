@@ -1,5 +1,5 @@
 <?php
-// functions.php version 0.9 by 6-Apr-26
+// functions.php version 0.10 by 9-Apr-26
 
 /**
  * Reading blocks of lines from a file (delimiter: empty line)
@@ -225,6 +225,78 @@ function generateUrl(string $date, string $section, string $name, ?string $ext =
     }
 
     return $url;
+}
+/**
+ * Returns the path to the resized thumbnail version of the image.
+ * 
+ * The thumbnail is saved in a 'thumbnails' folder next to the original image.
+ * The filename remains the same as the original.
+ * 
+ * @param string $imagePath  Full path to the original JPG file
+ * @param int    $width      Desired width of the thumbnail (height is proportional)
+ * @param int    $quality    JPEG quality (60-95, default 95)
+ * @return string            Path to the thumbnail (or original if failed)
+ */
+function getThumbnail($imagePath, $width = 85, $quality = 95) {
+    // root-relative → make absolute
+    $absolutePath = $_SERVER['DOCUMENT_ROOT'] . $imagePath;
+
+    $pathInfo    = pathinfo($absolutePath);
+    $originalDir = $pathInfo['dirname'];
+    $filename    = $pathInfo['basename'];
+    $cacheDir    = $originalDir . '/thumbnails';
+    $thumbPath   = $cacheDir . '/' . $filename;
+
+    // If thumbnail already exists - return it
+    if (file_exists($thumbPath)) {
+        return str_replace($_SERVER['DOCUMENT_ROOT'], '', $thumbPath);
+    }
+
+    if (!file_exists($absolutePath)) {
+        error_log("getThumbnail: Original file not found: $absolutePath");
+        return $imagePath;
+    }
+
+    // ==================== Create thumbnails directory ====================
+    if (!is_dir($cacheDir)) {
+        if (!mkdir($cacheDir, 0755, true)) {
+            $error = error_get_last();
+            error_log("getThumbnail: Failed to create directory '$cacheDir'. Error: " . ($error['message'] ?? 'unknown'));
+            
+            // Optional: show error only during development
+            if (ini_get('display_errors')) {
+                trigger_error("Cannot create thumbnails folder: $cacheDir<br>Check write permissions!", E_USER_WARNING);
+            }
+            
+            return $imagePath; // fallback to original
+        }
+    }
+
+    // Check if we can write to the folder
+    if (!is_writable($cacheDir)) {
+        error_log("getThumbnail: Directory exists but is not writable: $cacheDir");
+        return $imagePath;
+    }
+
+    // ================ Create thumbnail use Imagick ===================
+    try {
+        $image = new Imagick($absolutePath);
+
+        // The best resize method
+        $image->resizeImage($width, 0, Imagick::FILTER_LANCZOS, 1);
+
+        // Optimizaion
+        $image->setImageCompression(Imagick::COMPRESSION_JPEG);
+        $image->setImageCompressionQuality($quality);
+
+        $image->writeImage($thumbPath);
+        $image->destroy();
+
+    } catch (Exception $e) {
+        error_log("[getThumbnail] Imagick Error: " . $e->getMessage());
+    }
+
+    return str_replace($_SERVER['DOCUMENT_ROOT'], '', $thumbPath);
 }
 // parse Markdown
 function parseMarkdown($text) {
