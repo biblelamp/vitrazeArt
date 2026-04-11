@@ -1,5 +1,5 @@
 <?php
-// gallery.php version 0.1 by 6-Apr-26
+// gallery.php version 0.2 by 11-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -66,6 +66,7 @@ if ($author_uname) {
             }
         }
     }
+    $gallery_items = sortGalleryItemsByDate($gallery_items);
 }
 
 // 404 page

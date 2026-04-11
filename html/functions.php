@@ -1,5 +1,5 @@
 <?php
-// functions.php version 0.10 by 9-Apr-26
+// functions.php version 0.11 by 11-Apr-26
 
 /**
  * Reading blocks of lines from a file (delimiter: empty line)
@@ -182,6 +182,66 @@ function formatDateRu(string $dateStr): ?string {
     }
 
     return $result;
+}
+/**
+ * Sorts the gallery items array by date (newest first)
+ * Supports date formats: YYYY, YYYY-MM, YYYY-MM-DD
+ *
+ * @param array $gallery_items  Array in format [ 'filename' => [ [header], ... ], ... ]
+ * @return array                 Sorted array (by date descending)
+ */
+function sortGalleryItemsByDate(array $gallery_items): array {
+    uasort($gallery_items, function ($a, $b) {
+        $dateA = getNormalizedDate($a[0][0] ?? '');
+        $dateB = getNormalizedDate($b[0][0] ?? '');
+
+        // If dates are equal, preserve original order (stable sort)
+        if ($dateA === $dateB) {
+            return 0;
+        }
+
+        return $dateB <=> $dateA; // DESC - newest on top
+    });
+
+    return $gallery_items;
+}
+/**
+ * Normalizes date from the first line of the gallery item file
+ * into YYYY-MM-DD format for correct comparison
+ *
+ * @param string $headerLine  First line of the txt file (e.g. "bi-book-half 2023 Title...")
+ * @return string             Normalized date in YYYY-MM-DD format
+ */
+function getNormalizedDate(string $headerLine): string {
+    // Example: "bi-music-note-beamed 2025-5-15 Прогулка по Праге"
+    $parts = explode(' ', trim($headerLine));
+    
+    // Date is always the second element
+    $rawDate = $parts[1] ?? '';
+
+    if (empty($rawDate)) {
+        return '0000-00-00'; // Items without date go to the end
+    }
+
+    // Full format: YYYY-MM-DD
+    if (preg_match('/^\d{4}-\d{1,2}-\d{1,2}$/', $rawDate)) {
+        $date = DateTime::createFromFormat('Y-m-d', $rawDate);
+        return $date ? $date->format('Y-m-d') : '0000-00-00';
+    }
+
+    // Format: YYYY-MM
+    if (preg_match('/^\d{4}-\d{1,2}$/', $rawDate)) {
+        $date = DateTime::createFromFormat('Y-m', $rawDate);
+        return $date ? $date->format('Y-m-01') : '0000-00-00';
+    }
+
+    // Format: YYYY only
+    if (preg_match('/^\d{4}$/', $rawDate)) {
+        return $rawDate . '-01-01';
+    }
+
+    // Unknown format
+    return '0000-00-00';
 }
 /**
  * Generate a URL based on the date, section, name, and file extension
