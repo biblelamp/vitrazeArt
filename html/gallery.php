@@ -1,5 +1,5 @@
 <?php
-// gallery.php version 0.2 by 11-Apr-26
+// gallery.php version 0.3 by 11-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -12,6 +12,7 @@ $parts = explode('/', $uri);
 
 $author_uname = null;
 $author_item = null;
+$author_detail = null;
 $gallery_item_name = null;
 $number_authors = 10;
 
@@ -27,12 +28,8 @@ if (count($parts) > 1) {
 // get list of galleries if not define author
 $authors_names = [];
 if (count($parts) == 1) {
-    $iterator = new DirectoryIterator('data/gallery/');
-    foreach ($iterator as $file) {
-        if ($file->isDir() && !$file->isDot()) {
-            $authors_names[] = $file->getFilename();
-        }
-    }
+    $authors_names = glob('data/gallery/*', GLOB_ONLYDIR | GLOB_NOSORT);
+    $authors_names = array_map('basename', $authors_names);
 }
 
 // get authors who have galleries
@@ -55,16 +52,10 @@ if ($author_uname) {
         }
     }
     // read author's gallery items
-    $iterator = new DirectoryIterator('data/gallery/' . $author_uname);
-    foreach ($iterator as $file) {
-        if ($file->isFile() && !$file->isDot() && $file->getExtension() === 'txt') {
-            $file_name = $file->getBasename('.txt');
-            $detail_path = "data/gallery/{$author_uname}/{$file_name}.txt";
-            if (file_exists($detail_path)) {
-                $gallery_item = readBlocks($detail_path);
-                $gallery_items[$file_name] = $gallery_item;
-            }
-        }
+    $files = glob("data/gallery/{$author_uname}/*.txt");
+    foreach ($files as $filePath) {
+        $file_name = basename($filePath, '.txt');
+        $gallery_items[$file_name] = readBlocks($filePath);
     }
     $gallery_items = sortGalleryItemsByDate($gallery_items);
 }
