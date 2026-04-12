@@ -113,7 +113,7 @@ if (!empty($query)) {
         $title       = trim($item[1] ?? '');
         $description = trim($item[2] ?? '');
         $name        = trim($item[3] ?? '');
-        $url         = generateUrl($date, 'reports', $name)
+        $url         = generateUrl($date, 'reports', $name);
 
         if (empty($title) || empty($url)) continue;
 

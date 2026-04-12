@@ -253,38 +253,34 @@ function getNormalizedDate(string $headerLine): string {
  * @return string
  */
 function generateUrl(string $date, string $section, string $name, ?string $ext = null): string {
-    // Извлекаем только часть с датой (до запятой или пробела)
+    // Extract only the date part (before comma or space)
     $datePart = explode(',', $date)[0];
     $datePart = trim(explode(' ', $datePart)[0]);
 
-    // Разбиваем дату на год, месяц, день
-    $parts = explode('-', $datePart);
-
-    if (count($parts) !== 3) {
-        throw new InvalidArgumentException('Неверный формат даты');
+    // Strict check for YYYY-MM-DD format
+    if (!preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $datePart, $parts)) {
+        throw new InvalidArgumentException("Invalid date format: $date. Expected YYYY-MM-DD");
     }
 
-    $year  = (int)$parts[0];
-    $month = (int)$parts[1];
-    $day   = (int)$parts[2];
+    $year  = (int)$parts[1];
+    $month = (int)$parts[2];
+    $day   = (int)$parts[3];
 
     // Форматируем с ведущими нулями
     $monthStr = str_pad($month, 2, '0', STR_PAD_LEFT);
     $dayStr   = str_pad($day, 2, '0', STR_PAD_LEFT);
 
-    // Формируем путь
-    $url = "/{$section}/{$year}/{$monthStr}/{$dayStr}/{$name}";
-
-    // Добавляем расширение, если оно указано
+    // Flat URL with extension (example: /section/2026-04-05-name.jpg)
     if ($ext !== null && $ext !== '') {
-        // Если расширение передано без точки — добавляем её
+        // Added dot if not exists
         if (!str_starts_with($ext, '.')) {
             $ext = '.' . $ext;
         }
-        $url = "/{$section}/{$year}-{$monthStr}-{$dayStr}-{$name}" . $ext;
+        return "/{$section}/{$year}-{$monthStr}-{$dayStr}-{$name}" . $ext;
     }
 
-    return $url;
+    // Hierarchical URL (example: /section/2026/04/05/name)
+    return "/{$section}/{$year}/{$monthStr}/{$dayStr}/{$name}";
 }
 /**
  * Returns the path to the resized thumbnail version of the image.
