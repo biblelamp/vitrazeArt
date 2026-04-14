@@ -1,5 +1,5 @@
 <?php
-// stats.cz © 2026 version 0.1 by 13-Apr-26
+// stats.cz © 2026 version 0.2 by 14-Apr-26
 
 $dir = '/var/lib/awstats/';
 $domain = 'vitrazeArt.cz';
@@ -182,6 +182,28 @@ foreach ($refs as $url => $hits) {
 arsort($domains);
 $topDomains = array_slice($domains, 0, 10, true);
 
+// ===== DAY STATISTICS =====
+$dayBlock = extractBlock($content, 'DAY');
+$days = [];
+
+foreach (explode("\n", $dayBlock) as $line) {
+    $line = trim($line);
+    if (empty($line)) continue;
+    
+    $p = preg_split('/\s+/', $line);
+    if (count($p) >= 5) {
+        $date = $p[0]; // например 20260321
+        $days[$date] = [
+            'date'      => substr($date, 0, 4) . '-' . substr($date, 4, 2) . '-' . substr($date, 6, 2),
+            'pages'     => (int)$p[1],
+            'hits'      => (int)$p[2],
+            'bandwidth' => (int)$p[3],
+            'visits'    => (int)$p[4],
+        ];
+    }
+}
+krsort($days);
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -189,6 +211,7 @@ $topDomains = array_slice($domains, 0, 10, true);
     <meta charset="UTF-8">
     <title>Stats</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet"><!-- v5.3.8 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bg-light">
 
@@ -196,11 +219,18 @@ $topDomains = array_slice($domains, 0, 10, true);
 
         <h3>📊 Статистика</h3>
 
+        <!-- 1. Выбор файла (без изменений) -->
         <div class="mb-3">
-            <?php foreach ($fileMap as $k => $f): ?>
-                <a href="?file=<?= $k ?>" class="btn btn-sm <?= $k == $selectedKey ? 'btn-primary' : 'btn-outline-primary' ?>">
-                    <?= $k ?>
-                </a>
+            <?php foreach ($fileMap as $key => $f): ?>
+                <?php if ($key == $selectedKey): ?>
+                    <span class="btn btn-primary btn-sm fw-bold px-3">
+                        <strong><?= $key ?></strong>
+                    </span>
+                <?php else: ?>
+                    <a href="?file=<?= $key ?>" class="btn btn-outline-primary btn-sm">
+                        <?= $key ?>
+                    </a>
+                <?php endif; ?>
             <?php endforeach; ?>
         </div>
 
@@ -228,11 +258,46 @@ $topDomains = array_slice($domains, 0, 10, true);
             <?php endforeach; ?>
         </div>
 
-        <div class="row g-4">
+        <!-- ====================== ВТОРАЯ СТРОКА ====================== -->
+        <!-- Day statistics + Visit pages -->
+        <div class="row g-4 mb-4">
+            
+            <!-- Day Statistics (широкая колонка) -->
+            <div class="col-lg-8">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5>📅 Day statistics</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th class="text-end">Pages</th>
+                                        <th class="text-end">Hits</th>
+                                        <th class="text-end">Visits</th>
+                                        <th class="text-end">Bandwidth</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($days as $d): ?>
+                                    <tr>
+                                        <td><strong><?= $d['date'] ?></strong></td>
+                                        <td class="text-end"><?= nf($d['pages']) ?></td>
+                                        <td class="text-end"><?= nf($d['hits']) ?></td>
+                                        <td class="text-end"><?= nf($d['visits']) ?></td>
+                                        <td class="text-end"><?= formatBytes($d['bandwidth']) ?></td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <!-- VISIT PAGES -->
-            <div class="col-md-4">
-                <div class="card">
+            <!-- Visit pages -->
+            <div class="col-lg-4">
+                <div class="card h-100">
                     <div class="card-body">
                         <h5>📄 Visit pages</h5>
                         <ul class="list-group list-group-flush">
@@ -246,26 +311,30 @@ $topDomains = array_slice($domains, 0, 10, true);
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- 404 PAGES -->
-            <div class="col-md-4">
-                <div class="card">
+        <!-- ====================== ТРЕТЬЯ СТРОКА ====================== -->
+        <div class="row g-4">
+
+            <!-- 1-я колонка: Not found pages -->
+            <div class="col-lg-4">
+                <div class="card h-100">
                     <div class="card-body">
                         <h5>⚠️ Not found pages</h5>
                         <ul class="list-group list-group-flush">
-                            <?php foreach ($topPages404 as $u => $h): ?>
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span><?= htmlspecialchars($u) ?></span>
-                                    <span class="badge bg-danger"><?= nf($h) ?></span>
-                                </li>
-                            <?php endforeach; ?>
+                        <?php foreach ($topPages404 as $u => $h): ?>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span><?= htmlspecialchars($u) ?></span>
+                                <span class="badge bg-danger"><?= nf($h) ?></span>
+                            </li>
+                        <?php endforeach; ?>
                         </ul>
                     </div>
                 </div>
             </div>
 
-            <!-- ERRORS + ROBOTS -->
-            <div class="col-md-4">
+            <!-- 2-я колонка: Errors + Robots -->
+            <div class="col-lg-4">
                 <div class="card mb-4">
                     <div class="card-body">
                         <h5>❗ Errors</h5>
@@ -293,12 +362,13 @@ $topDomains = array_slice($domains, 0, 10, true);
                         </ul>
                     </div>
                 </div>
-
             </div>
 
-            <!-- SOURCES -->
-            <div class="col-md-4">
-                <div class="card">
+            <!-- 3-я колонка: Sources + Refferers + Search engines -->
+            <div class="col-lg-4">
+                
+                <!-- Sources -->
+                <div class="card mb-4">
                     <div class="card-body">
                         <h5>🌐 Sources</h5>
                         <ul class="list-group list-group-flush">
@@ -308,37 +378,33 @@ $topDomains = array_slice($domains, 0, 10, true);
                         </ul>
                     </div>
                 </div>
-            </div>
 
-            <!-- REFERRERS -->
-            <div class="col-md-4">
-                <div class="card">
+                <!-- Refferers -->
+                <div class="card mb-4">
                     <div class="card-body">
                         <h5>🔗 Refferers</h5>
                         <ul class="list-group list-group-flush">
-                            <?php foreach ($topDomains as $d => $h): ?>
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span><?= $d ?></span>
-                                    <span class="badge bg-warning text-dark"><?= nf($h) ?></span>
-                                </li>
-                            <?php endforeach; ?>
+                        <?php foreach ($topDomains as $d => $h): ?>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span><?= $d ?></span>
+                                <span class="badge bg-warning text-dark"><?= nf($h) ?></span>
+                            </li>
+                        <?php endforeach; ?>
                         </ul>
                     </div>
                 </div>
-            </div>
 
-            <!-- SEARCH ENGINES -->
-            <div class="col-md-4">
+                <!-- Search engines -->
                 <div class="card">
                     <div class="card-body">
                         <h5>🔍 Search engines</h5>
                         <ul class="list-group list-group-flush">
-                            <?php foreach ($topSearch as $e => $h): ?>
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span><?= $e ?></span>
-                                    <span class="badge bg-success"><?= nf($h) ?></span>
-                                </li>
-                            <?php endforeach; ?>
+                        <?php foreach ($topSearch as $e => $h): ?>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span><?= $e ?></span>
+                                <span class="badge bg-success"><?= nf($h) ?></span>
+                            </li>
+                        <?php endforeach; ?>
                         </ul>
                     </div>
                 </div>
