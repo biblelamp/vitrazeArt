@@ -1,5 +1,5 @@
 <?php
-// functions.php version 0.11 by 11-Apr-26
+// functions.php version 0.12 by 14-Apr-26
 
 /**
  * Reading blocks of lines from a file (delimiter: empty line)
@@ -188,7 +188,7 @@ function formatDateRu(string $dateStr): ?string {
  * Supports date formats: YYYY, YYYY-MM, YYYY-MM-DD
  *
  * @param array $gallery_items  Array in format [ 'filename' => [ [header], ... ], ... ]
- * @return array                 Sorted array (by date descending)
+ * @return array Sorted array (by date descending)
  */
 function sortGalleryItemsByDate(array $gallery_items): array {
     uasort($gallery_items, function ($a, $b) {
@@ -354,7 +354,18 @@ function getThumbnail($imagePath, $width = 85, $quality = 95) {
 
     return str_replace($_SERVER['DOCUMENT_ROOT'], '', $thumbPath);
 }
-// parse Markdown
+/**
+ * Parse Markdown tags in the given text and convert them to HTML.
+ * Supported Markdown features:
+ * - Horizontal separator: `---` → `<hr>`
+ * - Blockquotes: Lines starting with `>` → wrapped in `<blockquote>`
+ * - Links: `[name](url)` → `<a href="url">name</a>`
+ * - Italic: `*text*` → `<em>text</em>`
+ * - Bold: `**text**` → `<strong>text</strong>`
+ * Note: The function uses recursion to handle nested blockquotes and Markdown inside them.
+ * @param string $text Input text with Markdown
+ * @return string HTML output with Markdown converted to HTML tags  
+ */ 
 function parseMarkdown($text) {
     // horizontal separator (---)
     $text = preg_replace('/\n*\s*---\s*\n*/', '<hr>', $text);
@@ -371,7 +382,7 @@ function parseMarkdown($text) {
             // рекурсивно парсим markdown внутри цитаты (чтобы работали жирный, курсив, ссылки и т.д.)
             $quote = parseMarkdown($quote);   // внимание: рекурсия!
 
-            return '<figure class="my-3"><blockquote class="bg-light p-3 border-start rounded-3 border-4">' . $quote . '</blockquote></figure>';
+            return '<blockquote class="mb-0 bg-light p-3 pe-5 border-start rounded-3 border-4 d-inline-block position-relative">' . $quote . '<i class="bi bi-quote position-absolute top-0 end-0 me-2 mt-2 fs-4 text-muted opacity-50"></i></blockquote>';
         },
         $text
     );
