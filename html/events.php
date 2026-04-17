@@ -1,5 +1,5 @@
 <?php
-// events.php version 0.4 by 9-Apr-26
+// events.php version 0.5 by 17-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -26,18 +26,28 @@ if (count($parts) >= 5 && $parts[0] === 'events') {
 
     if ($year && $month && $day && $code) {
         $selected_slug = "{$year}-{$month}-{$day}-{$code}";
+        $requested_date = "{$year}-{$month}-{$day}";
 
-        // seek event by href
+        // looking for the event in all events (to get the full data, not just future)
         foreach ($all_events as $key => $item) {
-            if ($code === $item[4]) {
+            if (empty($item[0]) || empty($item[4])) continue;
+
+            $event_date = explode(' ', $item[0])[0]; // берём только дату (2026-04-18)
+
+            // Сравниваем и дату, и код
+            if ($code === strtolower($item[4]) && $requested_date === $event_date) {
                 $event_item = $item;
                 break;
             }
         }
-        // remove found item
+
+        // delete the found event from the future events list (if it is there) to avoid duplication
         foreach ($events as $key => $item) {
-            if ($code === $item[4]) {
-                unset($events[$key]); // remove found item
+            if (empty($item[0]) || empty($item[4])) continue;
+            $event_date = explode(' ', $item[0])[0];
+
+            if ($code === strtolower($item[4]) && $requested_date === $event_date) {
+                unset($events[$key]);
                 break;
             }
         }
