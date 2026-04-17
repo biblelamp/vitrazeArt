@@ -1,5 +1,5 @@
 <?php
-// functions.php version 0.12 by 14-Apr-26
+// functions.php version 0.13 by 17-Apr-26
 
 /**
  * Reading blocks of lines from a file (delimiter: empty line)
@@ -30,6 +30,8 @@ function readBlocks($filePath): array {
  *   YYYY-M-D
  *   YYYY-MM-DD,DD1
  *   YYYY-M-D,D1
+ *   YYYY-MM-DD-DD1
+ *   YYYY-M-D-D1
  */
 function filterByDate(array $data): array {
     $today = date('Y-m-d');
@@ -49,10 +51,15 @@ function filterByDate(array $data): array {
     return $result;
 }
 /**
- * Return last day from YYYY-MM-DD or YYYY-MM-DD,DD
+ * Return last day from date string for filtering future events.
  *
- * 2026-04-01,05 → 2026-04-05
- * 2026-04-01    → 2026-04-01
+ * Supported formats:
+ *   2026-04-01           → 2026-04-01
+ *   2026-4-1             → 2026-04-01
+ *   2026-04-01,05        → 2026-04-05
+ *   2026-04-01-05        → 2026-04-05
+ *   2026-4-1,5           → 2026-04-05
+ *   2026-4-1-5           → 2026-04-05
  */
 function getEffectiveDate(string $dateStr): ?string {
     $dateStr = trim($dateStr);
@@ -60,45 +67,40 @@ function getEffectiveDate(string $dateStr): ?string {
         return null;
     }
 
-    // Убираем время (всё после первого пробела)
+    // Leave only date part (remove time if present)
     $datePart = preg_split('/\s+/', $dateStr, 2)[0];
 
-    // Разделяем на основную дату и возможный диапазон дней
-    $parts = array_map('trim', explode(',', $datePart));
-    $mainPart = $parts[0];
-    $endDay   = $parts[1] ?? null;
-
-    // Нормализация даты (поддержка 2026-3-6 и 2026-03-06)
-    if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $mainPart, $m)) {
-        $normalized = sprintf('%04d-%02d-%02d', $m[1], $m[2], $m[3]);
-    } else {
-        return null;
+    // Unified regex for all variants
+    if (!preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[,-](\d{1,2}))?$/', $datePart, $m)) {
+        throw new InvalidArgumentException("Invalid date format: $datePart");
     }
 
-    $date = DateTime::createFromFormat('Y-m-d', $normalized);
-    if (!$date) {
-        return null;
-    }
+    $year   = (int)$m[1];
+    $month  = str_pad($m[2], 2, '0', STR_PAD_LEFT);
+    $day    = str_pad($m[3], 2, '0', STR_PAD_LEFT);
+    $endDay = $m[4] ?? null;
 
+    // If we have end day (either via comma or hyphen)
     if ($endDay !== null) {
-        $endDay = (int)$endDay;
-        $year   = $date->format('Y');
-        $month  = $date->format('m');
-        return sprintf('%s-%s-%02d', $year, $month, $endDay);
+        $endDay = str_pad($endDay, 2, '0', STR_PAD_LEFT);
+        return sprintf('%04d-%s-%s', $year, $month, $endDay);
     }
 
-    return $date->format('Y-m-d');
+    // Single date
+    return sprintf('%04d-%s-%s', $year, $month, $day);
 }
 /**
  * Formats a date or date range into Russian readable format.
  *
  * Supported input formats:
- * - YYYY-MM-DD          → "1 апреля"
- * - YYYY-M-D            → "1 апреля"
- * - YYYY-MM-DD,DD2      → "1-5 апреля"
- * - YYYY-M-D,D2         → "1-5 апреля"
- * - YYYY-MM             → "Апрель 2025" (month name capitalized)
- * - YYYY                → "2025"
+ * - YYYY                  → "2025"
+ * - YYYY-MM               → "Апрель 2025"
+ * - YYYY-MM-DD            → "1 апреля"
+ * - YYYY-M-D              → "1 апреля"
+ * - YYYY-MM-DD-DD         → "1-5 апреля"     (range with hyphen)
+ * - YYYY-M-D-D            → "1-5 апреля"
+ * - YYYY-MM-DD,DD         → "1 и 5 апреля"   (separate days with "и")
+ * - YYYY-M-D,D            → "1 и 5 апреля"
  *
  * If the year is the current year, it is omitted.
  *
@@ -123,60 +125,59 @@ function formatDateRu(string $dateStr): ?string {
         return null;
     }
 
-    // Split by comma for range support (e.g. "2025-04-01,05")
-    $parts = array_map('trim', explode(',', $dateStr, 2));
-    $mainDate = $parts[0];
-    $endDay = $parts[1] ?? null;
+    // Remove time if present
+    $datePart = preg_split('/\s+/', $dateStr, 2)[0];
 
-    // Determine input format
-    if (preg_match('/^\d{4}$/', $mainDate)) {
-        // YYYY only
-        return $mainDate;
+    // === YYYY only ===
+    if (preg_match('/^\d{4}$/', $datePart)) {
+        return $datePart;
     }
 
-    if (preg_match('/^\d{4}-\d{1,2}$/', $mainDate)) {
-        // YYYY-MM only
-        [$year, $month] = explode('-', $mainDate);
+    // === YYYY-MM only ===
+    if (preg_match('/^\d{4}-\d{1,2}$/', $datePart)) {
+        [$year, $month] = explode('-', $datePart);
         $month = str_pad($month, 2, '0', STR_PAD_LEFT);
-        
+
         if (!isset($monthsCapitalized[$month])) {
-            return null;
+            throw new InvalidArgumentException("Invalid date format: $datePart. Expected YYYY-MM");
         }
 
-        $result = $monthsCapitalized[$month] . ' ' . $year;
-        return $result;
+        return $monthsCapitalized[$month] . ' ' . $year;
     }
 
-    // Full date: YYYY-MM-DD or YYYY-M-D
-    if (!preg_match('/^\d{4}-\d{1,2}-\d{1,2}$/', $mainDate)) {
-        return null; // invalid format
+    // === Full date with optional range: YYYY-M-D[-|,]D ===
+    if (!preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})(?:([-,])(\d{1,2}))?$/', $datePart, $m)) {
+        throw new InvalidArgumentException("Invalid date format: $datePart. Expected YYYY-MM-DD or range");
     }
 
-    // Normalize to Y-m-d with leading zeros
-    $normalized = preg_replace_callback('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', 
-        fn($m) => sprintf('%d-%02d-%02d', $m[1], $m[2], $m[3]), 
-        $mainDate
-    );
+    $year       = (int)$m[1];
+    $monthNum   = str_pad($m[2], 2, '0', STR_PAD_LEFT);
+    $day1       = (int)$m[3];
+    $separator  = $m[4] ?? null;     // '-' or ','
+    $day2       = isset($m[5]) ? (int)$m[5] : null;
 
-    $date = DateTime::createFromFormat('Y-m-d', $normalized);
-    if (!$date) {
-        return null;
+    if (!isset($months[$monthNum])) {
+        throw new InvalidArgumentException("Invalid month in date: $datePart");
     }
 
-    $day   = (int)$date->format('j');
-    $month = $months[$date->format('m')];
-    $year  = $date->format('Y');
+    $monthName   = $months[$monthNum];
     $currentYear = date('Y');
 
     // Build result
-    if ($endDay !== null) {
-        $endDay = (int)$endDay;
-        $range = ($day === $endDay) ? $day : "$day-$endDay";
-        $result = "$range $month";
+    if ($day2 === null) {
+        // Single day
+        $result = "$day1 $monthName";
+    } elseif ($separator === '-') {
+        // Range: 1-5 апреля
+        $result = ($day1 === $day2) 
+            ? "$day1 $monthName" 
+            : "$day1-$day2 $monthName";
     } else {
-        $result = "$day $month";
+        // Separate days with comma: 1 и 5 апреля
+        $result = "$day1 и $day2 $monthName";
     }
 
+    // Add year if not current
     if ($year != $currentYear) {
         $result .= " $year";
     }
@@ -244,22 +245,37 @@ function getNormalizedDate(string $headerLine): string {
     return '0000-00-00';
 }
 /**
- * Generate a URL based on the date, section, name, and file extension
+ * Generate a URL based on the date, section, name, and file extension.
+ * 
+ * Supported date formats:
+ *   2026-04-01
+ *   2026-04-01,05
+ *   2026-04-01-05
+ *   2026-4-1
+ *   2026-4-1,5
+ *   2026-4-1-5
+ * 
+ * Uses the first (start) date for URL generation.
  * 
  * @param string $date
  * @param string $section
  * @param string $name
- * @param string|null $ext  Расширение (с точкой или без)
+ * @param string|null $ext  extension for jpg images (with or without dot) or null for no extension
  * @return string
  */
 function generateUrl(string $date, string $section, string $name, ?string $ext = null): string {
-    // Extract only the date part (before comma or space)
-    $datePart = explode(',', $date)[0];
-    $datePart = trim(explode(' ', $datePart)[0]);
+    $dateStr = trim($date);
+    if (empty($dateStr)) {
+        throw new InvalidArgumentException("Date cannot be empty");
+    }
 
-    // Strict check for YYYY-MM-DD format
-    if (!preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $datePart, $parts)) {
-        throw new InvalidArgumentException("Invalid date format: $date. Expected YYYY-MM-DD");
+    // Extract only the date part (before space or time)
+    $datePart = preg_split('/\s+/', $dateStr, 2)[0];
+
+    // Unified regex to support both comma and hyphen range
+    // Captures only the main date (YYYY-MM-DD)
+    if (!preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[,-]\d{1,2})?$/', $datePart, $parts)) {
+        throw new InvalidArgumentException("Invalid date format: $date. Expected YYYY-MM-DD or range");
     }
 
     $year  = (int)$parts[1];
@@ -272,7 +288,6 @@ function generateUrl(string $date, string $section, string $name, ?string $ext =
 
     // Flat URL with extension (example: /section/2026-04-05-name.jpg)
     if ($ext !== null && $ext !== '') {
-        // Added dot if not exists
         if (!str_starts_with($ext, '.')) {
             $ext = '.' . $ext;
         }
@@ -358,46 +373,77 @@ function getThumbnail($imagePath, $width = 85, $quality = 95) {
  * Parse Markdown tags in the given text and convert them to HTML.
  * Supported Markdown features:
  * - Horizontal separator: `---` → `<hr>`
+ * - Headings: `#` to `######` → `<h1>` to `<h6>`
  * - Blockquotes: Lines starting with `>` → wrapped in `<blockquote>`
  * - Links: `[name](url)` → `<a href="url">name</a>`
- * - Italic: `*text*` → `<em>text</em>`
  * - Bold: `**text**` → `<strong>text</strong>`
+ * - Italic: `*text*` → `<em>text</em>`
  * Note: The function uses recursion to handle nested blockquotes and Markdown inside them.
  * @param string $text Input text with Markdown
  * @return string HTML output with Markdown converted to HTML tags  
  */ 
 function parseMarkdown($text) {
-    // horizontal separator (---)
+    // Horizontal separator
     $text = preg_replace('/\n*\s*---\s*\n*/', '<hr>', $text);
 
-    // blockquote (bloks begins with >)
+    // ==================== HEADINGS H1-H6 ====================
     $text = preg_replace_callback(
-        '/(?:^|\n)(>.*(?:\n>.*)*)/m',
+        '/^(#{1,6})\s+(.+?)$/m',
         function ($matches) {
-            $quote = $matches[1];
+            $level = strlen($matches[1]);        // количество #
+            $content = trim($matches[2]);
 
-            // убираем символы > в начале каждой строки
-            $quote = preg_replace('/^>\s?/m', '', $quote);
+            // Inline Markdown внутри заголовка
+            // Links
+            $content = preg_replace_callback('/\[(.*?)\]\((.*?)\)/', function ($m) {
+                $name = $m[1];
+                $url  = $m[2];
+                return '<a href="' . $url . '"' . 
+                       (str_starts_with($url, 'http') ? ' target="_blank" rel="noopener"' : '') . 
+                       '>' . $name . '</a>';
+            }, $content);
 
-            // рекурсивно парсим markdown внутри цитаты (чтобы работали жирный, курсив, ссылки и т.д.)
-            $quote = parseMarkdown($quote);   // внимание: рекурсия!
+            // Bold **text**
+            $content = preg_replace('/\*\*(.*?)\*\*/s', '<strong>$1</strong>', $content);
 
-            return '<blockquote class="mb-0 bg-light p-3 pe-5 border-start rounded-3 border-4 d-inline-block position-relative">' . $quote . '<i class="bi bi-quote position-absolute top-0 end-0 me-2 mt-2 fs-4 text-muted opacity-50"></i></blockquote>';
+            // Italic *text*
+            $content = preg_replace('/\*(.*?)\*/s', '<em>$1</em>', $content);
+
+            return "<h{$level} class=\"mt-4 mb-3\">{$content}</h{$level}>";
         },
         $text
     );
 
-    // links [name](url)
+    // ==================== BLOCKQUOTES ====================
+    $text = preg_replace_callback(
+        '/(?:^|\n)(>.*(?:\n>.*)*)/m',
+        function ($matches) {
+            $quote = $matches[1];
+            $quote = preg_replace('/^>\s?/m', '', $quote);
+            $quote = parseMarkdown($quote);   // рекурсия для поддержки markdown внутри цитаты
+
+            return '<blockquote class="mb-0 bg-light p-3 pe-5 border-start rounded-3 border-4 d-inline-block position-relative">' 
+                   . $quote 
+                   . '<i class="bi bi-quote position-absolute top-0 end-0 me-2 mt-2 fs-4 text-muted opacity-50"></i></blockquote>';
+        },
+        $text
+    );
+
+    // ==================== INLINE ELEMENTS ====================
+
+    // Links [name](url)
     $text = preg_replace_callback('/\[(.*?)\]\((.*?)\)/', function ($matches) {
         $name = $matches[1];
-        $url = $matches[2];
-        return '<a href="' . $url . '"' . (str_starts_with($url, 'http')? ' target="_blank"' : '') . '>' . $name . '</a>';
+        $url  = $matches[2];
+        return '<a href="' . $url . '"' . 
+               (str_starts_with($url, 'http') ? ' target="_blank" rel="noopener"' : '') . 
+               '>' . $name . '</a>';
     }, $text);
 
-    // italic **text**
+    // Bold **text**
     $text = preg_replace('/\*\*(.*?)\*\*/s', '<strong>$1</strong>', $text);
 
-    // bold *text*
+    // Italic *text*
     $text = preg_replace('/\*(.*?)\*/s', '<em>$1</em>', $text);
 
     return $text;
