@@ -1,5 +1,5 @@
 <?php
-// functions.php version 0.13 by 17-Apr-26
+// functions.php version 0.14 by 17-Apr-26
 
 /**
  * Reading blocks of lines from a file (delimiter: empty line)
@@ -23,15 +23,9 @@ function readBlocks($filePath): array {
     return $items;
 }
 /**
- * Filter the list of events to exclude past events
+ * Filter the list of events to exclude past events.
  *
- * support formats:
- *   YYYY-MM-DD
- *   YYYY-M-D
- *   YYYY-MM-DD,DD1
- *   YYYY-M-D,D1
- *   YYYY-MM-DD-DD1
- *   YYYY-M-D-D1
+ * Uses getEventDateRange() to support all date formats including ranges.
  */
 function filterByDate(array $data): array {
     $today = date('Y-m-d');
@@ -42,52 +36,71 @@ function filterByDate(array $data): array {
             continue;
         }
 
-        $effectiveDate = getEffectiveDate($item[0]);
+        [$startDate, $endDate] = getEventDateRange($item[0]);
 
-        if ($effectiveDate !== null && $effectiveDate >= $today) {
+        // Use end date for filtering: show event if it hasn't finished yet
+        $effectiveDate = !empty($endDate) ? $endDate : $startDate;
+
+        if ($effectiveDate !== '' && $effectiveDate >= $today) {
             $result[] = $item;
         }
     }
     return $result;
 }
 /**
- * Return last day from date string for filtering future events.
+ * Parses the date string from events.txt and returns the start and end dates.
  *
  * Supported formats:
- *   2026-04-01           → 2026-04-01
- *   2026-4-1             → 2026-04-01
- *   2026-04-01,05        → 2026-04-05
- *   2026-04-01-05        → 2026-04-05
- *   2026-4-1,5           → 2026-04-05
- *   2026-4-1-5           → 2026-04-05
+ *   - "2026-04-18 19:00"           → single day
+ *   - "2026-04-24,26 19:00"        → range with comma (same month)
+ *   - "2026-05-16-17 10:00"        → range with hyphen (same month)
+ *
+ * @param string $dateTimeLine  Raw first line from event, e.g. "2026-04-24,26 19:00"
+ * @return array                [start_date, end_date] in YYYY-MM-DD format
  */
-function getEffectiveDate(string $dateStr): ?string {
-    $dateStr = trim($dateStr);
-    if (empty($dateStr)) {
-        return null;
+function getEventDateRange(string $dateTimeLine): array {
+    if (empty($dateTimeLine)) {
+        return ['', ''];
     }
 
-    // Leave only date part (remove time if present)
-    $datePart = preg_split('/\s+/', $dateStr, 2)[0];
+    // Extract only the date part (before time)
+    $datePart = trim(explode(' ', $dateTimeLine)[0]);
 
-    // Unified regex for all variants
-    if (!preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[,-](\d{1,2}))?$/', $datePart, $m)) {
-        throw new InvalidArgumentException("Invalid date format: $datePart");
+    $start = '';
+    $end   = '';
+
+    // Case 1: Comma-separated days (e.g. 2026-04-24,26)
+    if (strpos($datePart, ',') !== false) {
+        $parts = array_map('trim', explode(',', $datePart));
+        $base  = $parts[0];                    // "2026-04-24"
+
+        $start = $base;
+
+        $lastDay = end($parts);
+        if (strlen($lastDay) <= 2) {
+            // Only day is given → keep same year and month
+            $baseParts = explode('-', $base);
+            $end = $baseParts[0] . '-' . $baseParts[1] . '-' . str_pad($lastDay, 2, '0', STR_PAD_LEFT);
+        } else {
+            $end = $lastDay; // full date was given
+        }
+    }
+    // Case 2: Hyphenated days (e.g. 2026-05-16-17)
+    elseif (substr_count($datePart, '-') === 3) {
+        $parts = explode('-', $datePart);
+        $year  = $parts[0];
+        $month = str_pad($parts[1], 2, '0', STR_PAD_LEFT);
+
+        $start = "$year-$month-" . str_pad($parts[2], 2, '0', STR_PAD_LEFT);
+        $end   = "$year-$month-" . str_pad($parts[3], 2, '0', STR_PAD_LEFT);
+    }
+    // Case 3: Single date
+    else {
+        $start = $datePart;
+        $end   = $datePart;
     }
 
-    $year   = (int)$m[1];
-    $month  = str_pad($m[2], 2, '0', STR_PAD_LEFT);
-    $day    = str_pad($m[3], 2, '0', STR_PAD_LEFT);
-    $endDay = $m[4] ?? null;
-
-    // If we have end day (either via comma or hyphen)
-    if ($endDay !== null) {
-        $endDay = str_pad($endDay, 2, '0', STR_PAD_LEFT);
-        return sprintf('%04d-%s-%s', $year, $month, $endDay);
-    }
-
-    // Single date
-    return sprintf('%04d-%s-%s', $year, $month, $day);
+    return [$start, $end];
 }
 /**
  * Formats a date or date range into Russian readable format.
@@ -245,48 +258,42 @@ function getNormalizedDate(string $headerLine): string {
     return '0000-00-00';
 }
 /**
- * Generate a URL based on the date, section, name, and file extension.
+ * Generate a URL based on the event date line.
  * 
- * Supported date formats:
- *   2026-04-01
- *   2026-04-01,05
- *   2026-04-01-05
- *   2026-4-1
- *   2026-4-1,5
- *   2026-4-1-5
+ * Uses getEventDateRange() to correctly handle all date formats:
+ *   - "2026-04-18 19:00"
+ *   - "2026-04-24,26 19:00"
+ *   - "2026-05-16-17 10:00"
  * 
- * Uses the first (start) date for URL generation.
+ * Always uses the START date for URL generation.
  * 
- * @param string $date
- * @param string $section
- * @param string $name
- * @param string|null $ext  extension for jpg images (with or without dot) or null for no extension
- * @return string
+ * @param string $dateTimeLine  First line of event (with date and time)
+ * @param string $section       Section name (events, images/events, etc.)
+ * @param string $name          Event code/slug
+ * @param string|null $ext      File extension (e.g. 'jpg') or null for folder URL
+ * @return string               Generated URL
  */
-function generateUrl(string $date, string $section, string $name, ?string $ext = null): string {
-    $dateStr = trim($date);
-    if (empty($dateStr)) {
-        throw new InvalidArgumentException("Date cannot be empty");
+function generateUrl(string $dateTimeLine, string $section, string $name, ?string $ext = null): string {
+    if (empty($dateTimeLine)) {
+        throw new InvalidArgumentException("Date line cannot be empty");
     }
 
-    // Extract only the date part (before space or time)
-    $datePart = preg_split('/\s+/', $dateStr, 2)[0];
+    // Get start and end dates using the shared function
+    [$startDate, $endDate] = getEventDateRange($dateTimeLine);
 
-    // Unified regex to support both comma and hyphen range
-    // Captures only the main date (YYYY-MM-DD)
-    if (!preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[,-]\d{1,2})?$/', $datePart, $parts)) {
-        throw new InvalidArgumentException("Invalid date format: $date. Expected YYYY-MM-DD or range");
+    if (empty($startDate)) {
+        throw new InvalidArgumentException("Could not parse date from: $dateTimeLine");
     }
 
-    $year  = (int)$parts[1];
-    $month = (int)$parts[2];
-    $day   = (int)$parts[3];
+    // Use only the start date for URL
+    $datePart = $startDate;   // YYYY-MM-DD
 
-    // Форматируем с ведущими нулями
+    [$year, $month, $day] = explode('-', $datePart);
+
     $monthStr = str_pad($month, 2, '0', STR_PAD_LEFT);
     $dayStr   = str_pad($day, 2, '0', STR_PAD_LEFT);
 
-    // Flat URL with extension (example: /section/2026-04-05-name.jpg)
+    // With file extension (for images)
     if ($ext !== null && $ext !== '') {
         if (!str_starts_with($ext, '.')) {
             $ext = '.' . $ext;
@@ -294,7 +301,7 @@ function generateUrl(string $date, string $section, string $name, ?string $ext =
         return "/{$section}/{$year}-{$monthStr}-{$dayStr}-{$name}" . $ext;
     }
 
-    // Hierarchical URL (example: /section/2026/04/05/name)
+    // Hierarchical URL (for event pages)
     return "/{$section}/{$year}/{$monthStr}/{$dayStr}/{$name}";
 }
 /**

@@ -1,5 +1,5 @@
 <?php
-// vitrazeArt.cz © 2026 version 0.5.5 by 17-Apr-26
+// vitrazeArt.cz © 2026 version 0.5.6 by 18-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -78,8 +78,7 @@ $number_authors = 10;
             <div class="col-md-8">
               <div class="card-body">
                 <div class="text-muted small mb-2">
-                  <i class="bi bi-calendar-event"></i> <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?>
-                  <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0]) ?>
+                  <i class="bi bi-calendar-event"></i> <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?> <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0]) ?>
                 </div>
                 <h5 class="card-title fs-4 mb-3"><?= htmlspecialchars($title) ?></h5>
                 <p class="card-text text-muted mb-3"><?= htmlspecialchars($description) ?></p>

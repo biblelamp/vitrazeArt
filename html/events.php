@@ -25,28 +25,28 @@ if (count($parts) >= 5 && $parts[0] === 'events') {
     $code  = strtolower($parts[4] ?? '');
 
     if ($year && $month && $day && $code) {
-        $selected_slug = "{$year}-{$month}-{$day}-{$code}";
+        $selected_slug  = "{$year}-{$month}-{$day}-{$code}";
         $requested_date = "{$year}-{$month}-{$day}";
 
-        // looking for the event in all events (to get the full data, not just future)
-        foreach ($all_events as $key => $item) {
-            if (empty($item[0]) || empty($item[4])) continue;
+        // look for the event in all events (not only future, because it may be already past)
+        foreach ($all_events as $item) {
+            [$startDate, $endDate] = getEventDateRange($item[0] ?? '');
 
-            $event_date = explode(' ', $item[0])[0]; // берём только дату (2026-04-18)
+            if ($code === strtolower($item[4] ?? '') &&
+                ($requested_date === $startDate || $requested_date === $endDate)) {
 
-            // Сравниваем и дату, и код
-            if ($code === strtolower($item[4]) && $requested_date === $event_date) {
                 $event_item = $item;
                 break;
             }
         }
 
-        // delete the found event from the future events list (if it is there) to avoid duplication
+        // remove the event from the list to avoid duplication on the page
         foreach ($events as $key => $item) {
-            if (empty($item[0]) || empty($item[4])) continue;
-            $event_date = explode(' ', $item[0])[0];
+            [$startDate, $endDate] = getEventDateRange($item[0] ?? '');
 
-            if ($code === strtolower($item[4]) && $requested_date === $event_date) {
+            if ($code === strtolower($item[4] ?? '') &&
+                ($requested_date === $startDate || $requested_date === $endDate)) {
+
                 unset($events[$key]);
                 break;
             }
@@ -120,8 +120,12 @@ if ($event_item) {
           $title     = $event_item[2] ?? 'Без названия';
           $desc      = $event_item[3] ?? '';
           $name      = $event_item[4] ?? '';
-          $image     = generateUrl($date_time[0], 'images/events', $name, 'jpg');
-          $href      = generateUrl($date_time[0], 'events', $name);
+          $image     = '';
+          $href      = '#';
+          if (!empty($date_time) && !empty($name)) {
+              $image = generateUrl($date_time[0], 'images/events', $name, 'jpg');
+              $href  = generateUrl($date_time[0], 'events', $name);
+          }
         ?>
         <div class="card mb-4 border-0 shadow-sm overflow-hidden">
           <div class="row g-0">
@@ -135,10 +139,7 @@ if ($event_item) {
                 <?php if ($place): ?>
                 <div class="text-muted small mb-2">
                   <i class="bi bi-calendar-event"></i> <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?>
-                  · <?= htmlspecialchars(trim($place[0])) ?>
-                  <i class="bi bi-geo-alt"></i> <a href="<?= htmlspecialchars(trim($place[2])) ?>" target="_blank">
-                    <?= htmlspecialchars(trim($place[1])) ?>
-                  </a>
+                  · <?= htmlspecialchars(trim($place[0])) ?> <i class="bi bi-geo-alt"></i> <a href="<?= htmlspecialchars(trim($place[2])) ?>" target="_blank"><?= htmlspecialchars(trim($place[1])) ?></a>
                 </div>
                 <hr class="my-3">
                 <?php endif; ?>
