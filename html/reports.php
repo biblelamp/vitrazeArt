@@ -1,5 +1,5 @@
 <?php
-// reports.php version 0.4 by 5-Apr-26
+// reports.php version 0.5 by 21-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -37,11 +37,10 @@ if (count($parts) >= 5 && $parts[0] === 'reports') {
 // 404 если отчёт запрошен, но не найден
 if ($selected_slug && !$report_item) {
     $report_item = [
-        '404',
-        'Отчёт не найден',
-        'К сожалению, такого отчёта не существует…',
-        '',
-        ''
+        null,
+        'ошибочка 404',
+        'что вы тут ищете? нету такого отчёта…',
+        null
     ];
 }
 
@@ -97,12 +96,29 @@ if ($report_item) {
       <!-- Left column -->
       <div class="col-lg-8">
 
-       <!-- Card of report -->
-        <?php if ($report_item): 
+        <!-- Card of report -->
+<?php if ($report_item):
             $date  = $report_item[0] ?? '';
-            $title = $report_item[1] ?? 'Без названия';
+            $title = $report_item[1] ?? '';
+            $desc  = $report_item[2] ?? '';
         ?>
-       <div class="card border-0 shadow-sm mb-5">
+  <?php if (empty($date)): ?>
+        <div class="card mb-4 border-0 shadow-sm overflow-hidden">
+          <div class="card-body p-4 p-lg-5">
+            <div class="row align-items-center g-4 g-lg-5">
+              <div class="col-md-4 text-center text-md-start">
+                <img src="/images/authors/unknown.jpg" class="person-img-lg mb-3" alt="<?= htmlspecialchars($title) ?>">
+              </div>
+              <div class="col-md-8">
+                <h1 class="h3 fw-bold mb-2"><?= htmlspecialchars($title) ?></h1>
+                <p class="lead text-muted mb-3"><?= htmlspecialchars($desc) ?></p>
+                <p class="text-muted mb-4">request path: <?= $uri ?></p>
+              </div>
+            </div>
+          </div>
+        </div>
+  <?php else: ?>
+        <div class="card border-0 shadow-sm mb-5">
           <div class="card-body p-4 p-lg-4">
             <small class="text-muted"><?= formatDateRu($date) ?></small>
             <h1 class="h3 mt-2 mb-3"><?= htmlspecialchars($title) ?></h1>
@@ -118,7 +134,8 @@ if ($report_item) {
             <?php endif; ?>
           </div>
         </div>
-      <?php endif; ?>
+  <?php endif; ?>
+<?php endif; ?>
 
         <!-- Остальные отчёты — стиль как на index.php -->
         <h2 class="h3 mb-4 pb-2 border-bottom">
