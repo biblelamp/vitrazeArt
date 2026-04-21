@@ -1,5 +1,5 @@
 <?php
-// events.php version 0.5 by 17-Apr-26
+// events.php version 0.6 by 20-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -61,7 +61,7 @@ if (count($parts) == 1) {
 
 // 404 page
 if (!$event_item && count($parts) > 1) {
-    $event_item = ['', '', 'ошибка 404: анонс не найден', '', ''];
+    $event_item = [null, null, 'ошибочка 404', 'что вы тут ищете? нету такого анонса…', null];
 }
 
 // read event from file /data/events/...
@@ -127,6 +127,22 @@ if ($event_item) {
               $href  = generateUrl($date_time[0], 'events', $name);
           }
         ?>
+  <?php if (empty($name)): ?>
+        <div class="card mb-4 border-0 shadow-sm overflow-hidden">
+          <div class="card-body p-4 p-lg-5">
+            <div class="row align-items-center g-4 g-lg-5">
+              <div class="col-md-4 text-center text-md-start">
+                <img src="/images/authors/unknown.jpg" class="person-img-lg mb-3" alt="<?= htmlspecialchars($title) ?>">
+              </div>
+              <div class="col-md-8">
+                <h1 class="h3 fw-bold mb-2"><?= htmlspecialchars($title) ?></h1>
+                <p class="lead text-muted mb-3"><?= htmlspecialchars($desc) ?></p>
+                <p class="text-muted mb-4">request path: <?= $uri ?></p>
+              </div>
+            </div>
+          </div>
+        </div>
+  <?php else: ?>
         <div class="card mb-4 border-0 shadow-sm overflow-hidden">
           <div class="row g-0">
             <?php if ($image): ?>
@@ -159,8 +175,9 @@ if ($event_item) {
               <?php endif; ?>
           </div>
         </div>
-        <?php endif; ?>
-        <?php if ($first_item):
+  <?php endif; ?>
+<?php endif; ?>
+<?php if ($first_item):
           $date_time = explode(" ", $first_item[0] ?? '') ?? [];
           $place     = explode(",", $first_item[1] ?? '') ?? [];
           $title     = $first_item[2] ?? 'Без названия';
@@ -189,7 +206,7 @@ if ($event_item) {
             </div>
           </div>
         </div>
-        <?php endif; ?>
+<?php endif; ?>
 
 <?php foreach ($events as $item):
           $date_time = explode(" ", $item[0]) ?? '';

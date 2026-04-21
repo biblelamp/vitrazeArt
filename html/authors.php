@@ -1,5 +1,5 @@
 <?php
-// authors.php version 0.9 by 9-Apr-26
+// authors.php version 0.10 by 20-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -34,7 +34,7 @@ if ($selected_nick) {
 
 // 404 page
 if ($author_item == null && $selected_nick != null) {
-    $author_item = ['ошибочка 404', $selected_nick . ' unknown', 'вы кого тут ищете? нету такого…'];
+    $author_item = ['ошибочка 404', $selected_nick . ' unknown', 'кого вы тут ищете? нету такого…'];
 }
 
 // read /data/authors/<selected_nick>.txt
@@ -80,18 +80,6 @@ if ($author_item) {
   <link href="/css/style.css" rel="stylesheet"><!-- my styles -->
   <link rel="stylesheet" href="/css/bootstrap-icons.min.css"><!-- v1.13.1 -->
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
-  <style>
-    .person-img-lg { 
-      width: 200px; 
-      height: 200px; 
-      object-fit: cover; 
-      border-radius: 50%;
-    }
-    .author-card:hover { 
-      transform: translateY(-3px); 
-      transition: all 0.2s; 
-    }
-  </style>
 </head>
 <body class="bg-light">
 

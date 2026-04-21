@@ -4,6 +4,16 @@
   object-fit: cover;
   border-radius: 50%;
 }
+.person-img-lg { 
+  width: 200px; 
+  height: 200px; 
+  object-fit: cover; 
+  border-radius: 50%;
+}
+.author-card:hover { 
+  transform: translateY(-3px); 
+  transition: all 0.2s; 
+}
 .sidebar-sticky {
   position: sticky;
   top: 76px;

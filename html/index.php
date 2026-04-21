@@ -1,5 +1,15 @@
 <?php
-// vitrazeArt.cz © 2026 version 0.5.6 by 18-Apr-26
+/**
+ * vitrazeArt.cz © 2026 version 0.5.7 by 20-Apr-26
+ * 
+ * Main index page for the vitrazeart.cz website
+ * TODO:
+ * - expand the text of 'about' page
+ * - improve the search algorithm
+ * - expand the RSS feed
+ * - add event of 6.6 Pushkin's birthday
+ * - add report of 18.4 event
+ */
 
 require_once __DIR__ . '/functions.php';
 
@@ -90,8 +100,7 @@ $number_authors = 10;
 <?php else: ?>
         <div class="border-bottom py-3">
           <div class="text-muted small mb-1">
-             <i class="bi bi-calendar-event"></i> <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?>
-             <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0]) ?>
+             <i class="bi bi-calendar-event"></i> <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?> <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0]) ?>
           </div>
           <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
           <p class="text-muted mb-2"><?= htmlspecialchars($description) ?>… <a href="<?= $href ?>">подробнее <i class="bi bi-arrow-right"></i></a></p>
