@@ -22,7 +22,7 @@ if (count($parts) >= 5 && $parts[0] === 'reports') {
 
     if ($year && $month && $day && $code) {
         $selected_slug = "{$year}-{$month}-{$day}-{$code}";
-        
+
         // Находим выбранный отчёт в списке
         foreach ($reports as $key => $item) {
             if ($code === $item[3]) {
@@ -39,7 +39,7 @@ if ($selected_slug && !$report_item) {
     $report_item = [
         null,
         'ошибочка 404',
-        'что вы тут ищете? нету такого отчёта…',
+        'что вы тут ищете? нету такого репортажа…',
         null
     ];
 }
@@ -107,7 +107,7 @@ if ($report_item) {
           <div class="card-body p-4 p-lg-5">
             <div class="row align-items-center g-4 g-lg-5">
               <div class="col-md-4 text-center text-md-start">
-                <img src="/images/authors/unknown.jpg" class="person-img-lg mb-3" alt="<?= htmlspecialchars($title) ?>">
+                <img src="/images/authors/unknown.jpg" class="author-img-lg mb-3" alt="<?= htmlspecialchars($title) ?>">
               </div>
               <div class="col-md-8">
                 <h1 class="h3 fw-bold mb-2"><?= htmlspecialchars($title) ?></h1>

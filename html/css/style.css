@@ -1,10 +1,10 @@
-.person-img { 
+.author-img { 
   width: 85px;
   height: 85px;
   object-fit: cover;
   border-radius: 50%;
 }
-.person-img-lg { 
+.author-img-lg { 
   width: 200px; 
   height: 200px; 
   object-fit: cover; 
@@ -18,7 +18,7 @@
   position: sticky;
   top: 76px;
 }
-.announce-img {
+.event-img {
   height: 180px;
   object-fit: cover;
   border-radius: 14px;
@@ -31,7 +31,7 @@ footer a:hover i {
   transform: translateY(-2px);
 }
 @media (min-width: 768px) {
-  .announce-img {
+  .event-img {
     height: 100%;
   }
 }

@@ -132,7 +132,7 @@ if ($event_item) {
           <div class="card-body p-4 p-lg-5">
             <div class="row align-items-center g-4 g-lg-5">
               <div class="col-md-4 text-center text-md-start">
-                <img src="/images/authors/unknown.jpg" class="person-img-lg mb-3" alt="<?= htmlspecialchars($title) ?>">
+                <img src="/images/authors/unknown.jpg" class="author-img-lg mb-3" alt="<?= htmlspecialchars($title) ?>">
               </div>
               <div class="col-md-8">
                 <h1 class="h3 fw-bold mb-2"><?= htmlspecialchars($title) ?></h1>
@@ -147,7 +147,7 @@ if ($event_item) {
           <div class="row g-0">
             <?php if ($image): ?>
             <div class="col-md-4">
-              <img src="<?= htmlspecialchars($image) ?>" class="img-fluid announce-img" alt="<?= htmlspecialchars($title) ?>">
+              <img src="<?= htmlspecialchars($image) ?>" class="img-fluid event-img" alt="<?= htmlspecialchars($title) ?>">
             </div>
             <?php endif; ?>
             <div class="col-md-8">
@@ -190,7 +190,7 @@ if ($event_item) {
           <div class="row g-0">
             <div class="col-md-4">
               <a href="<?= $href ?>">
-                <img src="<?= htmlspecialchars($image) ?>" class="img-fluid announce-img" alt="<?= htmlspecialchars($title) ?>">
+                <img src="<?= htmlspecialchars($image) ?>" class="img-fluid event-img" alt="<?= htmlspecialchars($title) ?>">
               </a>
             </div>
             <div class="col-md-8">
@@ -247,7 +247,7 @@ if ($event_item) {
             $href     = '/authors/' . $nickname[0];
           ?>
           <a href="<?= $href ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
-            <img src="<?= getThumbnail($image) ?>" class="person-img" loading="lazy" decoding="async" alt="<?= htmlspecialchars($name) ?>">
+            <img src="<?= getThumbnail($image) ?>" class="author-img" loading="lazy" decoding="async" alt="<?= htmlspecialchars($name) ?>">
             <div>
               <h5 class="mb-1"><?= shortName($name) ?></h5>
               <small class="text-muted"><?= htmlspecialchars($role) ?></small>

@@ -8,6 +8,7 @@
  * - improve the search algorithm
  * - expand the RSS feed
  * - add event of 6.6 Pushkin's birthday
+ * - add event of 25.7 Vysotsky day
  * - add report of 18.4 event
  */
 
@@ -82,7 +83,7 @@ $number_authors = 10;
           <div class="row g-0">
             <div class="col-md-4">
               <a href="<?= $href ?>">
-                <img src="<?= htmlspecialchars($image) ?>" class="img-fluid announce-img" alt="<?= htmlspecialchars($title) ?>">
+                <img src="<?= htmlspecialchars($image) ?>" class="img-fluid event-img" alt="<?= htmlspecialchars($title) ?>">
               </a>
             </div>
             <div class="col-md-8">
@@ -110,7 +111,7 @@ $number_authors = 10;
       </div>
 
       <!-- Reports -->
-      <h2 class="h3 mb-4 pb-2 border-bottom">прошедшее</h2>
+      <h2 class="h3 mb-4 pb-2 border-bottom">отчёты и репортажи</h2>
 
       <div class="list-group list-group-flush border rounded shadow-sm">
 <?php foreach ($reports as $item): 
@@ -131,7 +132,7 @@ $number_authors = 10;
       </div>
 
       <div class="text-center mt-5">
-        <a href="/reports/" class="btn btn-outline-primary">всё прошедшее <i class="bi bi-arrow-right"></i></a>
+        <a href="/reports/" class="btn btn-outline-primary">все отчёты и репортажи <i class="bi bi-arrow-right"></i></a>
       </div>
     </div>
 
@@ -148,7 +149,7 @@ $number_authors = 10;
             $href     = '/authors/' . $nickname[0];
           ?>
           <a href="<?= $href ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
-            <img src="<?= getThumbnail($image) ?>" class="person-img" loading="lazy" decoding="async" alt="<?= htmlspecialchars($name) ?>">
+            <img src="<?= getThumbnail($image) ?>" class="author-img" loading="lazy" decoding="async" alt="<?= htmlspecialchars($name) ?>">
             <div>
               <h5 class="mb-1"><?= shortName($name) ?></h5>
               <small class="text-muted"><?= htmlspecialchars($role) ?></small>

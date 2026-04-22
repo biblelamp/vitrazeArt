@@ -96,18 +96,6 @@ if ($author_item) {
   <link href="/css/style.css" rel="stylesheet"><!-- my styles -->
   <link rel="stylesheet" href="/css/bootstrap-icons.min.css"><!-- v1.13.1 -->
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
-  <style>
-    .person-img-lg { 
-      width: 200px; 
-      height: 200px; 
-      object-fit: cover; 
-      border-radius: 50%;
-    }
-    .author-card:hover { 
-      transform: translateY(-3px); 
-      transition: all 0.2s; 
-    }
-  </style>
 </head>
 <body class="bg-light">
 
@@ -131,7 +119,7 @@ if ($author_item) {
         <div class="card-body p-4 p-lg-5">
           <div class="row align-items-center g-4 g-lg-5">
             <div class="col-md-4 text-center text-md-start">
-              <img src="<?= htmlspecialchars($image) ?>" class="person-img-lg mb-3" alt="<?= htmlspecialchars($name) ?>">
+              <img src="<?= htmlspecialchars($image) ?>" class="author-img-lg mb-3" alt="<?= htmlspecialchars($name) ?>">
             </div>
             <div class="col-md-8">
               <h1 class="h3 fw-bold mb-2"><?= htmlspecialchars($name) ?></h1>
@@ -187,7 +175,7 @@ if ($author_item) {
           <a href="<?= htmlspecialchars($href) ?>" class="text-decoration-none">
             <div class="card h-100 border-0 shadow-sm author-card">
               <div class="card-body text-center p-4">
-                <img src="<?= htmlspecialchars($image) ?>" class="person-img mb-3" alt="<?= htmlspecialchars($name) ?>">
+                <img src="<?= htmlspecialchars($image) ?>" class="author-img mb-3" alt="<?= htmlspecialchars($name) ?>">
                 <h5 class="card-title mb-1"><?= htmlspecialchars($name) ?></h5>
                 <p class="card-text text-muted small"><?= htmlspecialchars($role) ?></p>
               </div>
@@ -237,7 +225,7 @@ if ($author_item) {
             $href     = '/authors/' . $nickname[0];
           ?>
           <a href="<?= $href ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
-            <img src="<?= htmlspecialchars($image) ?>" class="person-img" alt="<?= htmlspecialchars($name) ?>">
+            <img src="<?= htmlspecialchars($image) ?>" class="author-img" alt="<?= htmlspecialchars($name) ?>">
             <div>
               <h5 class="mb-1"><?= shortName($name) ?></h5>
               <small class="text-muted"><?= htmlspecialchars($role) ?></small>

@@ -346,7 +346,7 @@ $totalResults = count($results);
             $href     = '/authors/' . $nickname[0];
           ?>
           <a href="<?= $href ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
-            <img src="<?= getThumbnail($image) ?>" class="person-img" loading="lazy" decoding="async" alt="<?= htmlspecialchars($name) ?>">
+            <img src="<?= getThumbnail($image) ?>" class="author-img" loading="lazy" decoding="async" alt="<?= htmlspecialchars($name) ?>">
             <div>
               <h5 class="mb-1"><?= shortName($name) ?></h5>
               <small class="text-muted"><?= htmlspecialchars($role) ?></small>
