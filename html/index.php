@@ -42,6 +42,7 @@ $number_authors = 10;
   <link href="/css/style.css" rel="stylesheet"><!-- my styles -->
   <link rel="stylesheet" href="/css/bootstrap-icons.min.css"><!-- v1.13.1 -->
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+  <link rel="canonical" href="https://vitrazeart.cz/">
   <link rel="alternate" type="application/rss+xml" title="Пражские витражи — RSS" href="https://vitrazeart.cz/feed.xml">
 </head>
 <body class="bg-light">

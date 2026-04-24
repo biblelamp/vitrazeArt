@@ -1,6 +1,11 @@
 RewriteEngine On
+# redirect from www. to
+RewriteCond %{HTTP_HOST} ^www\.vitrazeart\.cz [NC]
+RewriteRule ^(.*)$ https://vitrazeart.cz/$1 [L,R=301]
+# actual files and folders without redirection
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+# redirect page/file to php page
 RewriteRule ^feed\.xml$ feed.php [L]
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
 RewriteRule ^about(/.*)?$ pages.php [L]
