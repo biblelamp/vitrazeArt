@@ -78,13 +78,6 @@ if ($report_item) {
   <link href="/css/style.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/bootstrap-icons.min.css">
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
-  <style>
-    .report-content p { margin-bottom: 1.25rem; }
-    .report-card:hover { 
-      transform: translateY(-3px); 
-      transition: all 0.2s; 
-    }
-  </style>
 </head>
 <body class="bg-light">
 

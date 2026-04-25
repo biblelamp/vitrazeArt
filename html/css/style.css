@@ -23,6 +23,13 @@
   object-fit: cover;
   border-radius: 14px;
 }
+.report-content p { 
+  margin-bottom: 1.25rem; 
+}
+.report-card:hover { 
+  transform: translateY(-3px); 
+  transition: all 0.2s; 
+}
 footer a i {
   transition: all 0.2s ease;
 }
