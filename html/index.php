@@ -7,9 +7,7 @@
  * - expand the text of 'about' page
  * - improve the search algorithm
  * - expand the RSS feed
- * - add event of 6.6 Pushkin's birthday
  * - add event of 25.7 Vysotsky day
- * - add report of 18.4 event
  */
 
 require_once __DIR__ . '/functions.php';
