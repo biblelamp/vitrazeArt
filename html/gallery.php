@@ -1,5 +1,5 @@
 <?php
-// gallery.php version 0.3 by 11-Apr-26
+// gallery.php version 0.4 by 29-Apr-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -108,11 +108,11 @@ if ($author_item) {
     <div class="col-lg-8">
 
 <?php if ($author_item && !$gallery_item_name):
-            $name     = $author_item[0] ?? '';
-            $nickname = explode(" ", $author_item[1] ?? '') ?? [];
-            $role     = $author_item[2] ?? '';
-            $image    = '/images/authors/' . (count($nickname) > 1 ? $nickname[1] : $nickname[0]) . '.jpg';
-            $href     = '/authors/' . $nickname[0];
+        $name     = $author_item[0] ?? '';
+        $nickname = explode(" ", $author_item[1] ?? '') ?? [];
+        $role     = $author_item[2] ?? '';
+        $image    = '/images/authors/' . (count($nickname) > 1 ? $nickname[1] : $nickname[0]) . '.jpg';
+        $href     = '/authors/' . $nickname[0];
       ?>
       <!-- detail of selected author -->
       <div class="card border-0 shadow-sm mb-5">
@@ -132,27 +132,38 @@ if ($author_item) {
         </div>
       </div>
 <?php elseif ($gallery_item_name): 
-            $gallery_detail = $gallery_items[$gallery_item_name];
+        $gallery_detail = $gallery_items[$gallery_item_name] ?? null;
+        $header = null;
+        $title = 'Ошибочка 404';
+        $image = null;
+        if ($gallery_detail) {
             $header = explode(" ", $gallery_detail[0][0] ?? '') ?? [];
             $title  = implode(' ', array_slice($header, 2));
             $image  = 'images/gallery/' . $author_uname . '/' . $gallery_item_name . '.jpg';
             unset($gallery_detail[0]);
+        }
       ?>
       <!-- detail of selected item of gallery -->
       <div class="card border-0 shadow-sm mb-5">
         <div class="card-body p-4 p-lg-5">
-<?php if (is_file($image)): ?>
+<?php if ($image && is_file($image)): ?>
           <img src="/<?= $image ?>" class="img-fluid rounded-4 shadow-sm mx-auto d-block"
          style="max-height: 82vh; object-fit: contain;" alt="<?= $title ?>">
 <?php else: ?>
           <h1 class="h3 fw-bold mb-2"><?= $title ?></h1>
           <hr class="my-4">
 <?php endif; ?>
+<?php if ($gallery_detail): ?>
 <?php foreach ($gallery_detail as $block): ?>
           <div class="mt-4">
             <p class="mb-3"><?= nl2br(parseMarkdown(implode("\n", $block))) ?></p>
           </div>
 <?php endforeach; ?>
+<?php else: ?>
+          <div class="mt-4">
+            <p class="mb-3">Элемент галереи не найден: <strong><?= $gallery_item_name ?></strong></p>
+          </div>
+<?php endif; ?>
         </div>
       </div>
 <?php endif; ?>

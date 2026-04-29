@@ -1,12 +1,13 @@
 <?php
 /**
- * vitrazeArt.cz © 2026 version 0.5.7 by 20-Apr-26
+ * vitrazeArt.cz © 2026 version 0.5.8 by 29-Apr-26
  * 
  * Main index page for the vitrazeart.cz website
  * TODO:
  * - expand the text of 'about' page
  * - improve the search algorithm
  * - expand the RSS feed
+ * - added image-preview for gallery items
  * - add event of 25.7 Vysotsky day
  */
 
