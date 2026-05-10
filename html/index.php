@@ -1,6 +1,6 @@
 <?php
 /**
- * vitrazeArt.cz © 2026 version 0.5.8 by 29-Apr-26
+ * vitrazeArt.cz © 2026 version 0.5.9 by 10-May-26
  * 
  * Main index page for the vitrazeart.cz website
  * TODO:
@@ -8,6 +8,7 @@
  * - improve the search algorithm
  * - expand the RSS feed
  * - added image-preview for gallery items
+ * - add event of 21,23.5, 3.6 theater Tresk!
  * - add event of 25.7 Vysotsky day
  */
 
@@ -166,6 +167,7 @@ $number_authors = 10;
   </main>
 
   <?php include 'footer.html'; ?>
+  <?php include 'cookie-modal.html'; ?>
 
   <script src="/js/bootstrap.bundle.min.js"></script>
 </body>
