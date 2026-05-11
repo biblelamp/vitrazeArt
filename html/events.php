@@ -1,5 +1,5 @@
 <?php
-// events.php version 0.6 by 20-Apr-26
+// events.php version 0.7 by 10-May-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -7,6 +7,10 @@ require_once __DIR__ . '/functions.php';
 $all_events = readBlocks('data/events.txt');
 $events     = filterByDate($all_events);   // only future
 $authors    = readBlocks('data/authors.txt');
+
+// clean seen slugs and save them back to cookie
+$seenSlugs = getSeenSlugs();
+$seenSlugs = cleanSeenSlugs($seenSlugs, $events);
 
 shuffle($authors);
 $number_authors = 10;
@@ -125,6 +129,12 @@ if ($event_item) {
           if (!empty($date_time) && !empty($name)) {
               $image = generateUrl($date_time[0], 'images/events', $name, 'jpg');
               $href  = generateUrl($date_time[0], 'events', $name);
+
+              // mark as seen if it's new & save back to cookie
+              if ($selected_slug && !in_array($name, $seenSlugs)) {
+                $seenSlugs[] = $name;
+              }
+              saveSeenSlugs($seenSlugs);
           }
         ?>
   <?php if (empty($name)): ?>
@@ -185,6 +195,7 @@ if ($event_item) {
           $name      = $first_item[4] ?? '';
           $image     = generateUrl($date_time[0], 'images/events', $name, 'jpg');
           $href      = generateUrl($date_time[0], 'events', $name);
+          $is_new    = !in_array($name, $seenSlugs);
         ?>
         <div class="card mb-4 border-0 shadow-sm overflow-hidden">
           <div class="row g-0">
@@ -199,7 +210,9 @@ if ($event_item) {
                   <i class="bi bi-calendar-event"></i> <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?>
                   <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0]) ?>
                 </div>
-                <h5 class="card-title fs-4 mb-3"><?= htmlspecialchars($title) ?></h5>
+                <h5 class="card-title fs-4 d-flex align-items-center flex-wrap mb-3">
+                  <?php if ($is_new): ?><span class="badge bg-danger me-2 align-middle" style="font-size:.65em">новое</span><?php endif; ?><?= htmlspecialchars($title) ?>
+                </h5>
                 <p class="card-text text-muted mb-3"><?= htmlspecialchars($desc) ?></p>
                 <a href="<?= htmlspecialchars($href) ?>" class="btn btn-sm btn-outline-primary">подробнее <i class="bi bi-arrow-right"></i></a>
               </div>
@@ -216,13 +229,16 @@ if ($event_item) {
           $name      = $item[4] ?? '';
           $image     = generateUrl($date_time[0], 'images/events', $name, 'jpg');
           $href      = generateUrl($date_time[0], 'events', $name);
+          $is_new    = !in_array($name, $seenSlugs);
         ?>
         <div class="border-bottom py-3">
           <div class="text-muted small mb-1">
              <i class="bi bi-calendar-event"></i> <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1]) ?>
              <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0]) ?>
           </div>
-          <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
+          <h5 class="mb-1 d-flex align-items-center flex-wrap">
+            <?php if ($is_new): ?><span class="badge bg-danger me-2 align-middle" style="font-size:.65em">новое</span><?php endif; ?><?= htmlspecialchars($title) ?>
+          </h5>
           <p class="text-muted mb-2"><?= htmlspecialchars($desc) ?>… <a href="<?= htmlspecialchars($href) ?>">подробнее <i class="bi bi-arrow-right"></i></a></p>
         </div>
 <?php endforeach; ?>
@@ -264,6 +280,7 @@ if ($event_item) {
   </main>
 
   <?php include 'footer.html'; ?>
+  <?php include 'cookie-modal.html'; ?>
 
   <script src="/js/bootstrap.bundle.min.js"></script>
 </body>

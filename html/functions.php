@@ -1,5 +1,40 @@
 <?php
-// functions.php version 0.14 by 17-Apr-26
+// functions.php version 0.15 by 10-May-26
+
+/**
+ * Return array of slug from cookie 'seen_events'
+ */
+function getSeenSlugs(): array {
+    if (empty($_COOKIE['seen_events'])) return [];
+    return json_decode($_COOKIE['seen_events'], true) ?? [];
+}
+
+/**
+ * Clean seen_slugs — keeps only the actual ones
+ * @param array $seenSlugs — array of seen slugs
+ * @param array $allEvents — array from readBlocks('data/events.txt')
+ * @return array
+ */
+function cleanSeenSlugs(array $seenSlugs, array $allEvents): array {
+    $actualSlugs = array_map(fn($item) => $item[4] ?? '', $allEvents);
+    return array_values(array_intersect($seenSlugs, $actualSlugs));
+}
+
+/**
+ * Save list of slug in cookie for 1 year
+ * @param array $slugs — array of slugs to save
+ */
+function saveSeenSlugs(array $slugs): void {
+    setcookie(
+        'seen_events',
+        json_encode(array_values($slugs)),
+        time() + 60 * 60 * 24 * 365,
+        '/',
+        '',
+        true,
+        true
+    );
+}
 
 /**
  * Reading blocks of lines from a file (delimiter: empty line)
