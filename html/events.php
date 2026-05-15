@@ -9,8 +9,7 @@ $events     = filterByDate($all_events);   // only future
 $authors    = readBlocks('data/authors.txt');
 
 // clean seen slugs and save them back to cookie
-$seenSlugs = getSeenSlugs();
-$seenSlugs = cleanSeenSlugs($seenSlugs, $events);
+$seenSlugs = cleanSeenSlugs(getSeenSlugs(), $events);
 
 shuffle($authors);
 $number_authors = 10;

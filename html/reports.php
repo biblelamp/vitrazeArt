@@ -1,11 +1,14 @@
 <?php
-// reports.php version 0.5 by 21-Apr-26
+// reports.php version 0.6 by 15-May-26
 
 require_once __DIR__ . '/functions.php';
 
 // read files
 $events  = filterByDate(readBlocks('data/events.txt'));
 $reports = readBlocks('data/reports.txt');
+
+// clean seen slugs and save them back to cookie
+$seenSlugs = cleanSeenSlugs(getSeenSlugs(), $events);
 
 // parse URL: /reports/2026/03/24/drc
 $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
@@ -172,7 +175,8 @@ if ($report_item) {
                 $title       = $item[2] ?? '';
                 $description = $item[3] ?? '';
                 $name        = $item[4] ?? '';
-                $href        = generateUrl($date_time[0], 'events', $name)
+                $href        = generateUrl($date_time[0], 'events', $name);
+                $is_new      = !in_array($name, $seenSlugs);
             ?>
               <a href="<?= htmlspecialchars($href) ?>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
                 <div>
@@ -180,7 +184,9 @@ if ($report_item) {
                     <?= formatDateRu($date_time[0]) ?> · <?= htmlspecialchars($date_time[1] ?? '') ?>
                     <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($place[0] ?? '') ?>
                   </small>
-                  <h5 class="mb-1"><?= htmlspecialchars($title) ?></h5>
+                  <h5 class="mb-1 d-flex align-items-center flex-wrap">
+                    <?php if ($is_new): ?><span class="badge bg-danger me-2 align-middle" style="font-size:.65em">новое</span><?php endif; ?><?= htmlspecialchars($title) ?>
+                  </h5>
                 </div>
               </a>
             <?php endforeach; ?>
@@ -196,6 +202,7 @@ if ($report_item) {
   </main>
 
   <?php include 'footer.html'; ?>
+  <?php include 'cookie-modal.html'; ?>
 
   <script src="/js/bootstrap.bundle.min.js"></script>
 </body>
