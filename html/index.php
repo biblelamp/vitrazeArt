@@ -8,7 +8,6 @@
  * - improve the search algorithm
  * - expand the RSS feed
  * - added image-preview for gallery items
- * - add cookies control for new events in authors pages
  * - add events with an unknown date (YYYY-MM)
  * - add event of 25.7 Vysotsky day
  */

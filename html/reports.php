@@ -7,8 +7,8 @@ require_once __DIR__ . '/functions.php';
 $events  = filterByDate(readBlocks('data/events.txt'));
 $reports = readBlocks('data/reports.txt');
 
-// clean seen slugs and save them back to cookie
-$seenSlugs = cleanSeenSlugs(getSeenSlugs(), $events);
+// get seen slugs from cookie
+$seenSlugs = getSeenSlugs();
 
 // parse URL: /reports/2026/03/24/drc
 $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
