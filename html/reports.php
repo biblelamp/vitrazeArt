@@ -1,5 +1,5 @@
 <?php
-// reports.php version 0.6 by 15-May-26
+// reports.php version 0.6.1 by 19-May-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -26,7 +26,7 @@ if (count($parts) >= 5 && $parts[0] === 'reports') {
     if ($year && $month && $day && $code) {
         $selected_slug = "{$year}-{$month}-{$day}-{$code}";
 
-        // Находим выбранный отчёт в списке
+        // find report in list of reports
         foreach ($reports as $key => $item) {
             if ($code === $item[3]) {
                 $report_item = $item;
@@ -37,7 +37,7 @@ if (count($parts) >= 5 && $parts[0] === 'reports') {
     }
 }
 
-// 404 если отчёт запрошен, но не найден
+// 404 if report not found
 if ($selected_slug && !$report_item) {
     $report_item = [
         null,
@@ -57,8 +57,8 @@ if ($selected_slug) {
 }
 
 // title & description
-$title = 'Отчёты – Пражские витражи';
-$description = 'Отчёты и репортажи с мероприятий сообщества Пражские витражи.';
+$title = 'Репортажи – Пражские витражи';
+$description = 'Заметки и репортажи с мероприятий сообщества Пражские витражи.';
 if ($report_item) {
     $title = htmlspecialchars($report_item[1]) . ' – ' . $title;
     $description = htmlspecialchars($report_item[2]);
