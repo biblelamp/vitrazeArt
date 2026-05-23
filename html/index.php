@@ -7,7 +7,8 @@
  * - expand the text of 'about' page
  * - improve the search algorithm
  * - expand the RSS feed
- * - added image-preview for gallery items
+ * - add the option to specify dates in other months: YYYY-MM-DD,MM-DD
+ * - add image-preview for gallery items
  * - add events with an unknown date (YYYY-MM)
  * - add event of 25.7 Vysotsky day
  */
