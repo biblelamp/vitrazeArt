@@ -1,6 +1,6 @@
 <?php
 /**
- * vitrazeArt.cz © 2026 version 0.5.9 by 10-May-26
+ * vitrazeArt.cz © 2026 version 0.5.10 by 25-May-26
  * 
  * Main index page for the vitrazeart.cz website
  * TODO:

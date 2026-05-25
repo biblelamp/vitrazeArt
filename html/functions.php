@@ -1,5 +1,5 @@
 <?php
-// functions.php version 0.15 by 10-May-26
+// functions.php version 0.16 by 25-May-26
 
 /**
  * Return array of slug from cookie 'seen_events'
@@ -8,7 +8,6 @@ function getSeenSlugs(): array {
     if (empty($_COOKIE['seen_events'])) return [];
     return json_decode($_COOKIE['seen_events'], true) ?? [];
 }
-
 /**
  * Clean seen_slugs — keeps only the actual ones
  * @param array $seenSlugs — array of seen slugs
@@ -19,7 +18,6 @@ function cleanSeenSlugs(array $seenSlugs, array $allEvents): array {
     $actualSlugs = array_map(fn($item) => $item[4] ?? '', $allEvents);
     return array_values(array_intersect($seenSlugs, $actualSlugs));
 }
-
 /**
  * Save list of slug in cookie for 1 year
  * @param array $slugs — array of slugs to save
@@ -35,7 +33,6 @@ function saveSeenSlugs(array $slugs): void {
         true
     );
 }
-
 /**
  * Reading blocks of lines from a file (delimiter: empty line)
  *
@@ -89,6 +86,7 @@ function filterByDate(array $data): array {
  *   - "2026-04-18 19:00"           → single day
  *   - "2026-04-24,26 19:00"        → range with comma (same month)
  *   - "2026-05-16-17 10:00"        → range with hyphen (same month)
+ *   - "2026-05-21,23,06-03 19:00"  → days + another month
  *
  * @param string $dateTimeLine  Raw first line from event, e.g. "2026-04-24,26 19:00"
  * @return array                [start_date, end_date] in YYYY-MM-DD format
@@ -98,44 +96,46 @@ function getEventDateRange(string $dateTimeLine): array {
         return ['', ''];
     }
 
-    // Extract only the date part (before time)
     $datePart = trim(explode(' ', $dateTimeLine)[0]);
+    $year = substr($datePart, 0, 4);
 
-    $start = '';
-    $end   = '';
-
-    // Case 1: Comma-separated days (e.g. 2026-04-24,26)
-    if (strpos($datePart, ',') !== false) {
-        $parts = array_map('trim', explode(',', $datePart));
-        $base  = $parts[0];                    // "2026-04-24"
-
-        $start = $base;
-
-        $lastDay = end($parts);
-        if (strlen($lastDay) <= 2) {
-            // Only day is given → keep same year and month
-            $baseParts = explode('-', $base);
-            $end = $baseParts[0] . '-' . $baseParts[1] . '-' . str_pad($lastDay, 2, '0', STR_PAD_LEFT);
-        } else {
-            $end = $lastDay; // full date was given
-        }
-    }
-    // Case 2: Hyphenated days (e.g. 2026-05-16-17)
-    elseif (substr_count($datePart, '-') === 3) {
+    // Case: hyphenated range YYYY-MM-DD-DD (exactly 3 hyphens)
+    if (substr_count($datePart, '-') === 3 && strpos($datePart, ',') === false) {
         $parts = explode('-', $datePart);
-        $year  = $parts[0];
         $month = str_pad($parts[1], 2, '0', STR_PAD_LEFT);
-
         $start = "$year-$month-" . str_pad($parts[2], 2, '0', STR_PAD_LEFT);
         $end   = "$year-$month-" . str_pad($parts[3], 2, '0', STR_PAD_LEFT);
-    }
-    // Case 3: Single date
-    else {
-        $start = $datePart;
-        $end   = $datePart;
+        return [$start, $end];
     }
 
-    return [$start, $end];
+    // Case: comma-separated (may include cross-month entries like 06-03)
+    if (strpos($datePart, ',') !== false) {
+        // Strip YYYY- prefix, split by comma
+        $withoutYear = substr($datePart, 5); // "05-21,23,06-03"
+        $parts = explode(',', $withoutYear);
+
+        $baseMonth = str_pad(substr($parts[0], 0, 2), 2, '0', STR_PAD_LEFT);
+
+        // Parse start date from first part (MM-DD)
+        $firstDay = str_pad(substr($parts[0], 3), 2, '0', STR_PAD_LEFT);
+        $start = "$year-$baseMonth-$firstDay";
+
+        // Parse end date from last part
+        $last = end($parts);
+        if (strpos($last, '-') !== false) {
+            // Cross-month: "06-03" → full date
+            [$endMonth, $endDay] = explode('-', $last);
+            $end = "$year-" . str_pad($endMonth, 2, '0', STR_PAD_LEFT) . '-' . str_pad($endDay, 2, '0', STR_PAD_LEFT);
+        } else {
+            // Same month: just a day number
+            $end = "$year-$baseMonth-" . str_pad($last, 2, '0', STR_PAD_LEFT);
+        }
+
+        return [$start, $end];
+    }
+
+    // Case: single date YYYY-MM-DD
+    return [$datePart, $datePart];
 }
 /**
  * Formats a date or date range into Russian readable format.
@@ -149,6 +149,7 @@ function getEventDateRange(string $dateTimeLine): array {
  * - YYYY-M-D-D            → "1-5 апреля"
  * - YYYY-MM-DD,DD         → "1 и 5 апреля"   (separate days with "и")
  * - YYYY-M-D,D            → "1 и 5 апреля"
+ * - YYYY-MM-DD,DD,MM-DD   → "1, 5 апреля, 3 июня"
  *
  * If the year is the current year, it is omitted.
  *
@@ -185,52 +186,77 @@ function formatDateRu(string $dateStr): ?string {
     if (preg_match('/^\d{4}-\d{1,2}$/', $datePart)) {
         [$year, $month] = explode('-', $datePart);
         $month = str_pad($month, 2, '0', STR_PAD_LEFT);
-
         if (!isset($monthsCapitalized[$month])) {
-            throw new InvalidArgumentException("Invalid date format: $datePart. Expected YYYY-MM");
+            throw new InvalidArgumentException("Invalid date format: $datePart");
         }
-
         return $monthsCapitalized[$month] . ' ' . $year;
     }
 
-    // === Full date with optional range: YYYY-M-D[-|,]D ===
-    if (!preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})(?:([-,])(\d{1,2}))?$/', $datePart, $m)) {
-        throw new InvalidArgumentException("Invalid date format: $datePart. Expected YYYY-MM-DD or range");
-    }
-
-    $year       = (int)$m[1];
-    $monthNum   = str_pad($m[2], 2, '0', STR_PAD_LEFT);
-    $day1       = (int)$m[3];
-    $separator  = $m[4] ?? null;     // '-' or ','
-    $day2       = isset($m[5]) ? (int)$m[5] : null;
-
-    if (!isset($months[$monthNum])) {
-        throw new InvalidArgumentException("Invalid month in date: $datePart");
-    }
-
-    $monthName   = $months[$monthNum];
+    $year = substr($datePart, 0, 4);
     $currentYear = date('Y');
+    $withoutYear = substr($datePart, 5); // strip "YYYY-"
 
-    // Build result
-    if ($day2 === null) {
-        // Single day
-        $result = "$day1 $monthName";
-    } elseif ($separator === '-') {
-        // Range: 1-5 апреля
-        $result = ($day1 === $day2) 
-            ? "$day1 $monthName" 
-            : "$day1-$day2 $monthName";
-    } else {
-        // Separate days with comma: 1 и 5 апреля
-        $result = "$day1 и $day2 $monthName";
+    // === Hyphenated range: MM-DD-DD (3 hyphens total in full string) ===
+    if (substr_count($datePart, '-') === 3 && strpos($datePart, ',') === false) {
+        $parts = explode('-', $datePart);
+        $month = str_pad($parts[1], 2, '0', STR_PAD_LEFT);
+        $day1  = (int)$parts[2];
+        $day2  = (int)$parts[3];
+        $result = ($day1 === $day2)
+            ? "$day1 " . $months[$month]
+            : "$day1-$day2 " . $months[$month];
+        if ($year != $currentYear) $result .= " $year";
+        return $result;
     }
 
-    // Add year if not current
-    if ($year != $currentYear) {
-        $result .= " $year";
+    // === Comma-separated (same or cross-month) ===
+    if (strpos($datePart, ',') !== false) {
+        $parts = explode(',', $withoutYear); // e.g. ["05-21", "23", "06-03"]
+
+        $baseMonth = str_pad(substr($parts[0], 0, 2), 2, '0', STR_PAD_LEFT);
+        $baseDay   = (int)substr($parts[0], 3);
+
+        // Group days by month
+        $grouped = []; // ['05' => [21, 23], '06' => [3]]
+        $currentMonth = $baseMonth;
+
+        foreach ($parts as $part) {
+            if (strpos($part, '-') !== false) {
+                // New month specified: "06-03"
+                [$m, $d] = explode('-', $part);
+                $currentMonth = str_pad($m, 2, '0', STR_PAD_LEFT);
+                $grouped[$currentMonth][] = (int)$d;
+            } else {
+                // Day in current month
+                $grouped[$currentMonth][] = (int)$part;
+            }
+        }
+
+        // Format each month group
+        $parts_out = [];
+        foreach ($grouped as $month => $days) {
+            $dayList = implode(', ', $days);
+            $parts_out[] = $dayList . ' ' . $months[$month];
+        }
+
+        $result = implode(', ', $parts_out);
+        if ($year != $currentYear) $result .= " $year";
+        return $result;
     }
 
-    return $result;
+    // === Single date: MM-DD ===
+    if (preg_match('/^(\d{1,2})-(\d{1,2})$/', $withoutYear, $m)) {
+        $month = str_pad($m[1], 2, '0', STR_PAD_LEFT);
+        $day   = (int)$m[2];
+        if (!isset($months[$month])) {
+            throw new InvalidArgumentException("Invalid month in date: $datePart");
+        }
+        $result = "$day " . $months[$month];
+        if ($year != $currentYear) $result .= " $year";
+        return $result;
+    }
+
+    throw new InvalidArgumentException("Invalid date format: $datePart");
 }
 /**
  * Sorts the gallery items array by date (newest first)
