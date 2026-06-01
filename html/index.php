@@ -8,6 +8,7 @@
  * - improve the search algorithm
  * - expand the RSS feed
  * - add image-preview for gallery items
+ * - add the ability to store and play audio
  * - add events with an unknown date (YYYY-MM) and event'URL
  */
 
