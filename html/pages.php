@@ -110,6 +110,7 @@ if ($signature) {
   </main>
 
   <?php include 'footer.html'; ?>
+  <?php include 'cookie-modal.html'; ?>
 
   <script src="/js/bootstrap.bundle.min.js"></script>
 </body>
