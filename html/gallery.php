@@ -1,5 +1,5 @@
 <?php
-// gallery.php version 0.4 by 29-Apr-26
+// gallery.php version 0.5 by 18-Jun-26
 
 require_once __DIR__ . '/functions.php';
 
@@ -60,6 +60,21 @@ if ($author_uname) {
     $gallery_items = sortGalleryItemsByDate($gallery_items);
 }
 
+// parse the header of the selected gallery item (needed for <title> too,
+// so this must happen before the <head> is rendered, not inside the body)
+$gallery_detail     = null;
+$gallery_item_title = null;
+$gallery_item_image = null;
+if ($gallery_item_name) {
+    $gallery_detail = $gallery_items[$gallery_item_name] ?? null;
+    if ($gallery_detail) {
+        $header              = explode(" ", $gallery_detail[0][0] ?? '') ?? [];
+        $gallery_item_title  = implode(' ', array_slice($header, 2));
+        $gallery_item_image  = 'images/gallery/' . $author_uname . '/' . $gallery_item_name . '.jpg';
+        unset($gallery_detail[0]);
+    }
+}
+
 // 404 page
 if ($author_item == null && $author_uname != null) {
     $author_item = ['ошибочка 404', $author_uname . ' unknown', 'вы кого тут ищете? нету такого…'];
@@ -70,11 +85,21 @@ shuffle($authors);
 
 // image for preview
 $og_image = $author_item ? '/images/authors/' . $author_item[1] . '.jpg' : '/images/logo.jpg';
+if ($gallery_item_image && is_file($gallery_item_image)) {
+    $og_image = '/' . $gallery_item_image;
+}
 
 // title & description
 $title = 'Галереи – Пражские витражи';
 $description = 'Работы русскоязычных поэтов, художников, музыкантов и других людей творчества, живущих в Праге и Чехии.';
-if ($author_item) {
+if ($gallery_item_name) {
+    $title = $gallery_detail
+        ? htmlspecialchars($gallery_item_title) . ' – ' . htmlspecialchars($author_item[0]) . ' – ' . $title
+        : 'Ошибочка 404 – ' . $title;
+    $description = $gallery_detail
+        ? htmlspecialchars($gallery_item_title) . ' – ' . htmlspecialchars($author_item[0]) . ' – ' . $description
+        : 'Элемент галереи не найден';
+} elseif ($author_item) {
     $title = htmlspecialchars($author_item[0]) . ' – ' . $title;
     $description = empty($author_detail) ? htmlspecialchars($author_item[0]) . ' – ' . $description : htmlspecialchars($author_detail[0][0]);
 }
@@ -132,25 +157,17 @@ if ($author_item) {
         </div>
       </div>
 <?php elseif ($gallery_item_name): 
-        $gallery_detail = $gallery_items[$gallery_item_name] ?? null;
-        $header = null;
-        $title = 'Ошибочка 404';
-        $image = null;
-        if ($gallery_detail) {
-            $header = explode(" ", $gallery_detail[0][0] ?? '') ?? [];
-            $title  = implode(' ', array_slice($header, 2));
-            $image  = 'images/gallery/' . $author_uname . '/' . $gallery_item_name . '.jpg';
-            unset($gallery_detail[0]);
-        }
+        $item_title = $gallery_detail ? $gallery_item_title : 'Ошибочка 404';
+        $image      = $gallery_item_image;
       ?>
       <!-- detail of selected item of gallery -->
       <div class="card border-0 shadow-sm mb-5">
         <div class="card-body p-4 p-lg-5">
 <?php if ($image && is_file($image)): ?>
           <img src="/<?= $image ?>" class="img-fluid rounded-4 shadow-sm mx-auto d-block"
-         style="max-height: 82vh; object-fit: contain;" alt="<?= $title ?>">
+         style="max-height: 82vh; object-fit: contain;" alt="<?= htmlspecialchars($item_title) ?>">
 <?php else: ?>
-          <h1 class="h3 fw-bold mb-2"><?= $title ?></h1>
+          <h1 class="h3 fw-bold mb-2"><?= htmlspecialchars($item_title) ?></h1>
           <hr class="my-4">
 <?php endif; ?>
 <?php if ($gallery_detail): ?>
