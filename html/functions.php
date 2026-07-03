@@ -1,5 +1,5 @@
 <?php
-// functions.php version 0.16 by 25-May-26
+// functions.php version 0.17 by 03-Jul-26
 
 /**
  * Return array of slug from cookie 'seen_events'
@@ -16,7 +16,19 @@ function getSeenSlugs(): array {
  */
 function cleanSeenSlugs(array $seenSlugs, array $allEvents): array {
     $actualSlugs = array_map(fn($item) => $item[4] ?? '', $allEvents);
+    $actualSlugs = array_filter($actualSlugs, fn($slug) => $slug !== 'LATER');
     return array_values(array_intersect($seenSlugs, $actualSlugs));
+}
+/**
+ * Checks whether an event has no exact date/place yet.
+ * Such items use 'LATER' as a placeholder for place and slug in events.txt —
+ * they can't have a detail page, a mask-generated image, or "new" cookie tracking.
+ *
+ * @param array $item Event block from events.txt
+ * @return bool
+ */
+function isPendingEvent(array $item): bool {
+    return ($item[4] ?? '') === 'LATER';
 }
 /**
  * Save list of slug in cookie for 1 year
@@ -131,6 +143,16 @@ function getEventDateRange(string $dateTimeLine): array {
             $end = "$year-$baseMonth-" . str_pad($last, 2, '0', STR_PAD_LEFT);
         }
 
+        return [$start, $end];
+    }
+
+    // Case: month only YYYY-MM — announcement without an exact date yet
+    // (place and slug are set to 'LATER' in events.txt)
+    if (preg_match('/^\d{4}-\d{1,2}$/', $datePart)) {
+        $month   = str_pad(substr($datePart, 5), 2, '0', STR_PAD_LEFT);
+        $lastDay = date('t', strtotime("$year-$month-01"));
+        $start   = "$year-$month-01";
+        $end     = "$year-$month-" . str_pad($lastDay, 2, '0', STR_PAD_LEFT);
         return [$start, $end];
     }
 
